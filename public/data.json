@@ -1,0 +1,595 @@
+{
+  "globalStats": {
+    "total": 509,
+    "by_corpus": {
+      "聊斋志异": 106,
+      "阅微草堂笔记": 261,
+      "子不语": 142
+    },
+    "strategy_dist": {
+      "博弈型": 316,
+      "情感型": 138,
+      "顺从型": 14,
+      "抗争型": 8,
+      "非自主": 6
+    },
+    "type_dist": {
+      "鬼": 284,
+      "狐": 160,
+      "精": 24,
+      "仙": 7
+    },
+    "score_avg": {
+      "聊斋志异": 4.18,
+      "阅微草堂笔记": 3.05,
+      "子不语": 2.82,
+      "全部": 3.22
+    },
+    "transfer_rate": {
+      "聊斋志异": 45.3,
+      "阅微草堂笔记": 19.9,
+      "子不语": 26.8,
+      "全部": 27.1
+    },
+    "score_dist": [
+      5,
+      82,
+      99,
+      112,
+      95,
+      72,
+      26,
+      16,
+      2,
+      0
+    ],
+    "outcome_top": [
+      {
+        "label": "消散",
+        "count": 215
+      },
+      {
+        "label": "离开",
+        "count": 88
+      },
+      {
+        "label": "持续存在",
+        "count": 70
+      },
+      {
+        "label": "人间定居",
+        "count": 45
+      },
+      {
+        "label": "被消灭",
+        "count": 7
+      },
+      {
+        "label": "成婚",
+        "count": 7
+      },
+      {
+        "label": "复仇成功",
+        "count": 6
+      },
+      {
+        "label": "不详",
+        "count": 6
+      },
+      {
+        "label": "复活",
+        "count": 4
+      },
+      {
+        "label": "不适用",
+        "count": 4
+      },
+      {
+        "label": "被驱逐",
+        "count": 3
+      },
+      {
+        "label": "成仙",
+        "count": 3
+      }
+    ]
+  },
+  "gamePaths": {
+    "狐|博弈型|是": {
+      "count": 38,
+      "avg_score": 4.45,
+      "top_outcome": "离开",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "婴宁",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "狐联",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "胡四姐",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "遵化署狐",
+          "corpus": "聊斋志异"
+        }
+      ]
+    },
+    "狐|博弈型|否": {
+      "count": 78,
+      "avg_score": 3.6,
+      "top_outcome": "离开",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "娇娜",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "瞳人语",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "海公子",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "莲香",
+          "corpus": "聊斋志异"
+        }
+      ]
+    },
+    "狐|情感型|是": {
+      "count": 8,
+      "avg_score": 4.12,
+      "top_outcome": "消散",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "狐女",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "不忘旧情",
+          "corpus": "阅微草堂笔记"
+        },
+        {
+          "title": "狐妾",
+          "corpus": "阅微草堂笔记"
+        },
+        {
+          "title": "狐婢绿云",
+          "corpus": "阅微草堂笔记"
+        }
+      ]
+    },
+    "狐|情感型|否": {
+      "count": 26,
+      "avg_score": 2.81,
+      "top_outcome": "消散",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "绩女",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "卖面妇",
+          "corpus": "阅微草堂笔记"
+        },
+        {
+          "title": "老狐自献",
+          "corpus": "阅微草堂笔记"
+        },
+        {
+          "title": "两狐",
+          "corpus": "阅微草堂笔记"
+        }
+      ]
+    },
+    "狐|顺从型|是": {
+      "count": 2,
+      "avg_score": 3.5,
+      "top_outcome": "离开",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "王成",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "青凤",
+          "corpus": "聊斋志异"
+        }
+      ]
+    },
+    "狐|顺从型|否": {
+      "count": 4,
+      "avg_score": 2.0,
+      "top_outcome": "离开",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "汾州狐",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "秦生",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "东医宝鉴有法治狐",
+          "corpus": "子不语"
+        },
+        {
+          "title": "治妖易治人难",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "狐|非自主|否": {
+      "count": 1,
+      "avg_score": 1.0,
+      "top_outcome": "成婚",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "狐嫁女",
+          "corpus": "聊斋志异"
+        }
+      ]
+    },
+    "鬼|博弈型|是": {
+      "count": 65,
+      "avg_score": 4.32,
+      "top_outcome": "消散",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "画皮",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "水莽草（寇三娘）",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "聂小倩",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "连城",
+          "corpus": "聊斋志异"
+        }
+      ]
+    },
+    "鬼|博弈型|否": {
+      "count": 100,
+      "avg_score": 3.55,
+      "top_outcome": "消散",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "新郎",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "巧娘",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "庙鬼",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "林四娘",
+          "corpus": "聊斋志异"
+        }
+      ]
+    },
+    "鬼|情感型|是": {
+      "count": 9,
+      "avg_score": 3.67,
+      "top_outcome": "消散",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "鬼不足畏",
+          "corpus": "阅微草堂笔记"
+        },
+        {
+          "title": "女鬼撕卷",
+          "corpus": "阅微草堂笔记"
+        },
+        {
+          "title": "回妇",
+          "corpus": "阅微草堂笔记"
+        },
+        {
+          "title": "多情之鬼",
+          "corpus": "阅微草堂笔记"
+        }
+      ]
+    },
+    "鬼|情感型|否": {
+      "count": 84,
+      "avg_score": 2.15,
+      "top_outcome": "消散",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "湘裙",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "冯木匠",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "杜小雷",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "粉蝶",
+          "corpus": "聊斋志异"
+        }
+      ]
+    },
+    "鬼|顺从型|否": {
+      "count": 4,
+      "avg_score": 1.5,
+      "top_outcome": "目标实现",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "成神不必贤人",
+          "corpus": "子不语"
+        },
+        {
+          "title": "温元帅显灵",
+          "corpus": "子不语"
+        },
+        {
+          "title": "人寿有定阴间不能增减",
+          "corpus": "子不语"
+        },
+        {
+          "title": "小僮遇女鬼",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "鬼|抗争型|是": {
+      "count": 1,
+      "avg_score": 3.0,
+      "top_outcome": "复仇成功",
+      "top_cost": "生命",
+      "examples": [
+        {
+          "title": "谢檀霞",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "鬼|抗争型|否": {
+      "count": 4,
+      "avg_score": 3.0,
+      "top_outcome": "持续存在",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "神和病",
+          "corpus": "子不语"
+        },
+        {
+          "title": "荷花儿",
+          "corpus": "子不语"
+        },
+        {
+          "title": "坛响",
+          "corpus": "子不语"
+        },
+        {
+          "title": "偷墙",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "鬼|非自主|否": {
+      "count": 2,
+      "avg_score": 0.5,
+      "top_outcome": "被消灭",
+      "top_cost": "生命",
+      "examples": [
+        {
+          "title": "尸变",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "军校妻",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "精|博弈型|是": {
+      "count": 2,
+      "avg_score": 4.5,
+      "top_outcome": "离开",
+      "top_cost": "生命（被猫袭击，临死前声称怨恨）",
+      "examples": [
+        {
+          "title": "阿英",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "奇确",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "精|博弈型|否": {
+      "count": 9,
+      "avg_score": 3.44,
+      "top_outcome": "持续存在",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "柳生",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "放蝶",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "葛巾",
+          "corpus": "聊斋志异"
+        },
+        {
+          "title": "蛇妖幻形",
+          "corpus": "阅微草堂笔记"
+        }
+      ]
+    },
+    "精|情感型|是": {
+      "count": 1,
+      "avg_score": 5.0,
+      "top_outcome": "消散",
+      "top_cost": "存在（身体被毁；被绑住推出去）",
+      "examples": [
+        {
+          "title": "质愿精",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "精|情感型|否": {
+      "count": 3,
+      "avg_score": 2.67,
+      "top_outcome": "消散",
+      "top_cost": "存在（①被焚烧；②碎裂，被画上胡须）",
+      "examples": [
+        {
+          "title": "肖形能化",
+          "corpus": "阅微草堂笔记"
+        },
+        {
+          "title": "侮人取祸",
+          "corpus": "阅微草堂笔记"
+        },
+        {
+          "title": "海中毛人张口生风",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "精|顺从型|否": {
+      "count": 1,
+      "avg_score": 1.0,
+      "top_outcome": "消亡",
+      "top_cost": "被克制消灭（嗜酒本性被利用）",
+      "examples": [
+        {
+          "title": "异",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "精|抗争型|否": {
+      "count": 1,
+      "avg_score": 2.0,
+      "top_outcome": "被消灭",
+      "top_cost": "生命（被法师神将击杀）",
+      "examples": [
+        {
+          "title": "濑怪",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "精|非自主|否": {
+      "count": 3,
+      "avg_score": 0.33,
+      "top_outcome": "被释放",
+      "top_cost": "生命（临时，阳光致死）",
+      "examples": [
+        {
+          "title": "花魄",
+          "corpus": "子不语"
+        },
+        {
+          "title": "佛奴穿母胁生",
+          "corpus": "子不语"
+        },
+        {
+          "title": "人变鱼",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "仙|博弈型|是": {
+      "count": 1,
+      "avg_score": 3.0,
+      "top_outcome": "自主离去",
+      "top_cost": "千年孤守（前世情缘被棒打散，魂滞水府千余年）",
+      "examples": [
+        {
+          "title": "乩仙",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "仙|博弈型|否": {
+      "count": 4,
+      "avg_score": 4.0,
+      "top_outcome": "持续存在",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "囊囊",
+          "corpus": "子不语"
+        },
+        {
+          "title": "虎衔文昌头",
+          "corpus": "子不语"
+        },
+        {
+          "title": "子不语娘娘",
+          "corpus": "子不语"
+        },
+        {
+          "title": "僵尸",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "仙|情感型|否": {
+      "count": 1,
+      "avg_score": 4.0,
+      "top_outcome": "持续存在",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "徐巨源",
+          "corpus": "子不语"
+        }
+      ]
+    },
+    "仙|顺从型|否": {
+      "count": 1,
+      "avg_score": 1.0,
+      "top_outcome": "离去",
+      "top_cost": "不适用",
+      "examples": [
+        {
+          "title": "拘蛇",
+          "corpus": "子不语"
+        }
+      ]
+    }
+  }
+}
