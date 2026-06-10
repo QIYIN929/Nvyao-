@@ -1,6 +1,5 @@
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  RadarChart, Radar, PolarGrid, PolarAngleAxis,
   PieChart, Pie, Cell, Legend,
 } from 'recharts';
 
@@ -16,30 +15,11 @@ const STRAT_ORDER = ['博弈型','情感型','顺从型','抗争型','非自主'
 
 function SectionTitle({ children }) {
   return (
-    <div className="chapter-line mb-6">
-      <h3 style={{
-        fontFamily: "'Noto Serif SC', serif",
-        fontSize: '1rem',
-        letterSpacing: '0.2em',
-        color: 'var(--ink)',
-        whiteSpace: 'nowrap',
-      }}>{children}</h3>
-    </div>
-  );
-}
-
-function StatCard({ label, value, sub, color }) {
-  return (
-    <div className="p-4 border text-center"
-      style={{ borderColor: color || 'rgba(74,55,40,0.2)', background: 'rgba(245,237,214,0.5)' }}>
-      <div style={{
-        fontSize: 'clamp(1.8rem,4vw,2.8rem)',
-        fontFamily: "'Ma Shan Zheng', serif",
-        color: color || 'var(--ink)',
-        lineHeight: 1,
-      }}>{value}</div>
-      <div className="mt-1 text-xs" style={{ color: 'var(--ink-light)', letterSpacing: '0.1em' }}>{label}</div>
-      {sub && <div className="text-xs mt-0.5" style={{ color: 'var(--ash)' }}>{sub}</div>}
+    <div className="flex items-center gap-4 mb-8 mt-12">
+      <h2 className="text-2xl font-serif text-ink tracking-widest" style={{ fontFamily: "'Ma Shan Zheng', serif" }}>
+        {children}
+      </h2>
+      <div className="h-px flex-1 bg-gradient-to-r from-ink/20 to-transparent"></div>
     </div>
   );
 }
@@ -47,14 +27,15 @@ function StatCard({ label, value, sub, color }) {
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="p-3 border text-xs" style={{
-      background: 'var(--paper)', borderColor: 'rgba(74,55,40,0.3)',
+    <div className="p-4 border bg-paper/95 backdrop-blur shadow-sm" style={{
+      borderColor: 'rgba(74,55,40,0.2)',
       fontFamily: "'Noto Serif SC', serif",
     }}>
-      <p className="font-medium mb-1" style={{ color: 'var(--ink)' }}>{label}</p>
+      <p className="font-bold mb-2 text-ink text-sm">{label}</p>
       {payload.map(p => (
-        <p key={p.name} style={{ color: p.color }}>
-          {p.name}：{p.value}
+        <p key={p.name} className="text-sm tracking-widest flex justify-between gap-4" style={{ color: p.color || 'var(--ink)' }}>
+          <span>{p.name}：</span>
+          <span>{p.value}</span>
         </p>
       ))}
     </div>
@@ -65,171 +46,147 @@ export default function Dashboard({ stats }) {
   if (!stats) return null;
   const { globalStats } = stats;
 
-  // Strategy bar chart data
-  const stratData = STRAT_ORDER.map(s => ({
-    name: s.replace('型',''),
-    聊斋志异: stats.globalStats.strategy_dist[s] || 0,
-    阅微草堂笔记: 0,
-    子不语: 0,
-  }));
-  // We don't have per-corpus strat breakdown in data.json yet, use totals
   const stratTotal = STRAT_ORDER.map(s => ({
-    name: s.replace('型','').replace('非自主','任命'),
+    name: s.replace('型','').replace('非自主','认命'),
     数量: globalStats.strategy_dist[s] || 0,
     fill: PALETTE[s],
   }));
 
-  // Score distribution
   const scoreDist = globalStats.score_dist.map((cnt, i) => ({
     name: String(i),
     数量: cnt,
-    fill: i <= 2 ? '#6B5B4E' : i <= 5 ? '#7C8FA0' : '#A07820',
+    fill: i <= 2 ? '#6B5B4E' : i <= 5 ? '#7C8FA0' : i <= 7 ? '#A07820' : '#8B1A1A',
   }));
 
-  // Corpus comparison
   const corpusData = [
     { name: '聊斋志异', 条目: globalStats.by_corpus['聊斋志异'], 转换率: globalStats.transfer_rate['聊斋志异'], 主体性均值: globalStats.score_avg['聊斋志异'] },
     { name: '阅微草堂笔记', 条目: globalStats.by_corpus['阅微草堂笔记'], 转换率: globalStats.transfer_rate['阅微草堂笔记'], 主体性均值: globalStats.score_avg['阅微草堂笔记'] },
     { name: '子不语', 条目: globalStats.by_corpus['子不语'], 转换率: globalStats.transfer_rate['子不语'], 主体性均值: globalStats.score_avg['子不语'] },
   ];
 
-  // Outcome pie
-  const outcomeData = (globalStats.outcome_top || []).slice(0, 8).map((o, i) => ({
+  const outcomeData = (globalStats.outcome_top || []).slice(0, 8).map((o) => ({
     name: o.label.length > 8 ? o.label.slice(0,8)+'…' : o.label,
     value: o.count,
   }));
   const PIE_COLORS = ['#8B1A1A','#A07820','#2C4A3E','#7C8FA0','#6B5B4E','#9DB5C8','#C8982A','#3D6B5C'];
 
   return (
-    <div className="py-10 px-4 max-w-5xl mx-auto">
-      {/* Hero stats */}
-      <SectionTitle>一、总体规模</SectionTitle>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
-        <StatCard label="有效标注条目" value={globalStats.total} color="var(--vermillion)" />
-        <StatCard label="主体性均值" value={globalStats.score_avg['全部']} sub="满分 9 分" color="var(--gold)" />
-        <StatCard label="策略转换率" value={`${globalStats.transfer_rate['全部']}%`} sub="有转换的比例" color="var(--jade)" />
-        <StatCard label="涉及语料" value="三书" sub="聊斋·阅微·子不语" color="var(--ash)" />
-      </div>
-
-      {/* Corpus comparison */}
-      <SectionTitle>二、三书对比</SectionTitle>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
+    <div className="animate-fade-up">
+      <SectionTitle>三书全览考</SectionTitle>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
         {corpusData.map(c => (
-          <div key={c.name} className="p-5 border" style={{
-            borderColor: PALETTE[c.name] || 'rgba(74,55,40,0.2)',
-            background: 'rgba(245,237,214,0.5)',
-          }}>
-            <p className="text-sm font-medium mb-3" style={{ color: PALETTE[c.name], letterSpacing: '0.1em' }}>
+          <div key={c.name} className="relative p-6 bg-paper/40 border border-ink/10 hover:border-ink/30 transition-colors shadow-sm">
+            <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: PALETTE[c.name] }}></div>
+            <h3 className="text-xl mb-6 text-center tracking-widest" style={{ color: PALETTE[c.name], fontFamily: "'Ma Shan Zheng', serif" }}>
               {c.name}
-            </p>
-            <div className="space-y-2 text-xs" style={{ color: 'var(--ink-light)' }}>
-              <div className="flex justify-between">
-                <span>有效条目</span>
-                <strong style={{ color: 'var(--ink)' }}>{c.条目} 篇</strong>
+            </h3>
+            <div className="space-y-4 text-sm font-serif">
+              <div className="flex justify-between items-end border-b border-ink/5 pb-2">
+                <span className="text-ash tracking-widest">录入案卷</span>
+                <span className="text-xl text-ink">{c.条目}</span>
               </div>
-              <div className="flex justify-between">
-                <span>主体性均值</span>
-                <strong style={{ color: PALETTE[c.name] }}>{c.主体性均值}</strong>
+              <div className="flex justify-between items-end border-b border-ink/5 pb-2">
+                <span className="text-ash tracking-widest">平均主体性</span>
+                <span className="text-xl" style={{ color: PALETTE[c.name] }}>{c.主体性均值}</span>
               </div>
-              <div className="flex justify-between">
-                <span>策略转换率</span>
-                <strong style={{ color: 'var(--ink)' }}>{c.转换率}%</strong>
+              <div className="flex justify-between items-end pb-2">
+                <span className="text-ash tracking-widest">策略转换率</span>
+                <span className="text-xl text-ink">{c.转换率}%</span>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Strategy distribution */}
-      <SectionTitle>三、策略类型分布</SectionTitle>
-      <div className="mb-10 p-4 border" style={{ borderColor: 'rgba(74,55,40,0.2)', background: 'rgba(245,237,214,0.4)' }}>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={stratTotal} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-            <XAxis dataKey="name" tick={{ fontSize: 12, fontFamily: "'Noto Serif SC',serif", fill: '#4A3728' }} />
-            <YAxis tick={{ fontSize: 11, fill: '#6B5B4E' }} />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="数量" radius={[2,2,0,0]}>
-              {stratTotal.map((entry, i) => (
-                <Cell key={i} fill={entry.fill} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-        <p className="text-xs text-center mt-2" style={{ color: 'var(--ash)', letterSpacing: '0.1em' }}>
-          博弈型主导（{globalStats.strategy_dist['博弈型']} 例，占 {Math.round(globalStats.strategy_dist['博弈型']/globalStats.total*100)}%）
-        </p>
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <div>
+          <SectionTitle>策略流派志</SectionTitle>
+          <div className="bg-paper/40 border border-ink/10 p-6 shadow-sm">
+            <div className="h-[280px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stratTotal} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="name" tick={{ fontSize: 13, fontFamily: "'Noto Serif SC', serif", fill: 'var(--ink)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 12, fill: 'var(--ash)' }} axisLine={false} tickLine={false} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(74,55,40,0.05)' }} />
+                  <Bar dataKey="数量" radius={[2,2,0,0]} maxBarSize={50}>
+                    {stratTotal.map((entry, i) => (
+                      <Cell key={i} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <p className="text-xs text-ash mt-4 text-center tracking-widest border-t border-ink/5 pt-4">
+              博弈型主导（{globalStats.strategy_dist['博弈型']} 例，占 {Math.round(globalStats.strategy_dist['博弈型']/globalStats.total*100)}%），印证了异类在人间生存之务实。
+            </p>
+          </div>
+        </div>
 
-      {/* Score distribution */}
-      <SectionTitle>四、主体性评分分布</SectionTitle>
-      <div className="mb-10 p-4 border" style={{ borderColor: 'rgba(74,55,40,0.2)', background: 'rgba(245,237,214,0.4)' }}>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={scoreDist} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-            <XAxis dataKey="name" tick={{ fontSize: 12, fontFamily: 'serif', fill: '#4A3728' }}
-              label={{ value: '主体性评分', position: 'insideBottom', offset: -2, fontSize: 11, fill: '#6B5B4E' }} />
-            <YAxis tick={{ fontSize: 11, fill: '#6B5B4E' }} />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="数量" radius={[2,2,0,0]}>
-              {scoreDist.map((entry, i) => (
-                <Cell key={i} fill={entry.fill} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-        <div className="flex justify-center gap-4 mt-2 text-xs" style={{ color: 'var(--ash)' }}>
-          <span><span style={{ color: '#6B5B4E' }}>■</span> 灰烬（0-2）</span>
-          <span><span style={{ color: '#7C8FA0' }}>■</span> 银辉（3-5）</span>
-          <span><span style={{ color: '#A07820' }}>■</span> 金焰（6-9）</span>
+        <div>
+          <SectionTitle>主体性评分图</SectionTitle>
+          <div className="bg-paper/40 border border-ink/10 p-6 shadow-sm">
+            <div className="h-[280px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={scoreDist} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="name" tick={{ fontSize: 13, fontFamily: "'Noto Serif SC', serif", fill: 'var(--ink)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 12, fill: 'var(--ash)' }} axisLine={false} tickLine={false} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(74,55,40,0.05)' }} />
+                  <Bar dataKey="数量" radius={[2,2,0,0]} maxBarSize={40}>
+                    {scoreDist.map((entry, i) => (
+                      <Cell key={i} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex justify-center gap-6 mt-4 pt-4 border-t border-ink/5 text-xs text-ash tracking-widest">
+              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-[#6B5B4E]"></div> 灰烬</span>
+              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-[#7C8FA0]"></div> 银辉</span>
+              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-[#A07820]"></div> 金焰</span>
+              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-[#8B1A1A]"></div> 朱砂</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Outcome distribution */}
-      <SectionTitle>五、结局大类分布（TOP8）</SectionTitle>
-      <div className="mb-10 p-4 border" style={{ borderColor: 'rgba(74,55,40,0.2)', background: 'rgba(245,237,214,0.4)' }}>
-        <ResponsiveContainer width="100%" height={240}>
-          <PieChart>
-            <Pie data={outcomeData} cx="50%" cy="50%" outerRadius={90}
-              dataKey="value" nameKey="name" label={({ name, percent }) =>
-                `${name} ${(percent*100).toFixed(0)}%`}
-              labelLine={false}
-              style={{ fontSize: '11px', fontFamily: "'Noto Serif SC',serif" }}>
-              {outcomeData.map((_, i) => (
-                <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip content={<CustomTooltip />} />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Key findings */}
-      <SectionTitle>六、核心研究发现</SectionTitle>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-        {[
-          {
-            color: '#8B1A1A',
-            title: '聊斋志异策略转换率最高',
-            body: '45.3% 的聊斋异类女性在叙事中改变了应对策略，远高于阅微（19.9%）和子不语（26.8%）。聊斋故事篇幅更长，为策略演变提供了叙事空间。',
-          },
-          {
-            color: '#2C4A3E',
-            title: '阅微"情感型"异常集中',
-            body: '阅微草堂笔记中情感型策略占 38.7%（101 例），远高于另两书。纪昀笔下的超自然女性更多以情感连结而非主动谋略应对人界，折射其保守道德立场。',
-          },
-          {
-            color: '#A07820',
-            title: '抗争型仅见于子不语',
-            body: '全部 8 例抗争型策略全部来自子不语。另两书几乎不出现正面对抗，子不语的市井志怪语境为直接抗争提供了更多叙事合法性。',
-          },
-        ].map((f, i) => (
-          <div key={i} className="p-5 border-l-2" style={{
-            borderColor: f.color,
-            background: 'rgba(245,237,214,0.5)',
-          }}>
-            <p className="text-sm font-medium mb-2" style={{ color: f.color, letterSpacing: '0.08em' }}>{f.title}</p>
-            <p className="text-xs leading-6" style={{ color: 'var(--ink-light)' }}>{f.body}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+        <div className="lg:col-span-1">
+          <SectionTitle>终局走势</SectionTitle>
+          <div className="bg-paper/40 border border-ink/10 p-6 h-[320px] shadow-sm flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={outcomeData} cx="50%" cy="50%" innerRadius={40} outerRadius={90}
+                  dataKey="value" nameKey="name" label={({ name, percent }) => `${name}`}
+                  labelLine={false}
+                  stroke="var(--paper)" strokeWidth={2}
+                  style={{ fontSize: '11px', fontFamily: "'Noto Serif SC',serif", fill: 'var(--ink)' }}>
+                  {outcomeData.map((_, i) => (
+                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-        ))}
+        </div>
+
+        <div className="lg:col-span-2">
+          <SectionTitle>核心考语</SectionTitle>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 h-[320px]">
+            <div className="p-6 bg-paper/40 border-l-2 shadow-sm flex flex-col justify-center" style={{ borderColor: '#8B1A1A' }}>
+              <h4 className="text-lg font-serif mb-4 tracking-widest text-[#8B1A1A]">聊斋变局最频</h4>
+              <p className="text-sm leading-relaxed text-ink-light tracking-wide text-justify">
+                45.3% 的聊斋异类在叙事中改变了应对策略，远高于阅微（19.9%）与子不语（26.8%）。蒲松龄赋予了她们更幽深的叙事空间，使她们得以在绝境中完成从妥协到觉醒的心理蜕变。
+              </p>
+            </div>
+            <div className="p-6 bg-paper/40 border-l-2 shadow-sm flex flex-col justify-center" style={{ borderColor: '#2C4A3E' }}>
+              <h4 className="text-lg font-serif mb-4 tracking-widest text-[#2C4A3E]">子不语独见抗争</h4>
+              <p className="text-sm leading-relaxed text-ink-light tracking-wide text-justify">
+                全样本中仅有的 8 例极端「抗争型」策略，竟悉数出自《子不语》。在袁枚笔下的市井江湖中，异类不再一味隐忍，她们敢于撕破脸皮，以暴烈之姿向礼教与天威拔剑。
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

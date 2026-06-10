@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 const CORPUS_COLOR = {
   '聊斋志异': '#8B1A1A',
@@ -12,108 +12,66 @@ const STRAT_COLORS = {
   抗争型: '#2C4A3E', 非自主: '#7C8FA0',
 };
 
-function ScoreDots({ score }) {
+function getSealByScore(score) {
   const s = Math.max(0, Math.min(9, parseInt(score) || 0));
-  const color = s <= 2 ? '#6B5B4E' : s <= 5 ? '#7C8FA0' : '#A07820';
-  return (
-    <span className="inline-flex gap-0.5 items-center">
-      {Array.from({ length: 9 }).map((_, i) => (
-        <span key={i} style={{
-          display: 'inline-block', width: '7px', height: '7px',
-          borderRadius: '1px',
-          background: i < s ? color : 'rgba(74,55,40,0.15)',
-        }} />
-      ))}
-      <span className="ml-1 text-xs" style={{ color }}>{s}</span>
-    </span>
-  );
+  if (s <= 2) return { color: '#6B5B4E', name: '灰烬' };
+  if (s <= 5) return { color: '#7C8FA0', name: '银辉' };
+  if (s <= 7) return { color: '#A07820', name: '金焰' };
+  return { color: '#8B1A1A', name: '朱砂' };
 }
 
-function EntryCard({ entry, expanded, onToggle }) {
+function EntryCard({ entry }) {
   const corpusColor = CORPUS_COLOR[entry['语料库']] || '#6B5B4E';
   const stratKey = entry['_策略简称'] || '';
-  const stratColor = STRAT_COLORS[stratKey] || '#6B5B4E';
+  const score = entry['_主体性'] || 0;
+  const seal = getSealByScore(score);
+  const title = String(entry['篇名'] || '').replace(/子不语卷[^ ]*-/,'').replace(/聊斋志异-/,'').replace(/阅微草堂笔记-/,'');
+  const hasTrans = entry['策略转换'] === '是';
 
   return (
-    <div className="border mb-2 transition-all duration-200"
-      style={{ borderColor: expanded ? corpusColor : 'rgba(74,55,40,0.18)', background: 'rgba(245,237,214,0.55)' }}>
-      {/* Header row */}
-      <button
-        className="w-full text-left px-4 py-3 flex items-center gap-3"
-        onClick={onToggle}
-      >
-        <span className="text-xs px-2 py-0.5 rounded-full shrink-0"
-          style={{ background: `${corpusColor}18`, color: corpusColor, letterSpacing: '0.05em' }}>
+    <div className="group relative bg-paper/40 border border-ink/10 p-5 hover:border-ink/30 transition-all shadow-sm hover:shadow-md flex flex-col h-full overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: corpusColor }}></div>
+      <div className="absolute -bottom-4 -right-4 w-24 h-24 flex items-center justify-center pointer-events-none opacity-[0.03] group-hover:opacity-[0.08] transition-opacity"
+        style={{ color: seal.color, fontFamily: "'Ma Shan Zheng', serif", fontSize: '6rem' }}>
+        {seal.name.charAt(0)}
+      </div>
+      
+      <div className="mb-4 flex items-center gap-2">
+        <span className="text-xs px-2 py-0.5 border" style={{ borderColor: `${corpusColor}40`, color: corpusColor, background: `${corpusColor}10` }}>
           {entry['语料库']}
         </span>
-        <span className="text-xs" style={{ color: 'var(--ash)', minWidth: '28px' }}>
-          #{entry['序号']}
+        <span className="text-xs px-2 py-0.5 border border-ink/10 text-ash bg-ink/5">
+          {entry['异类类型'] || '未知'}
         </span>
-        <span className="font-medium text-sm flex-1 text-left" style={{ color: 'var(--ink)', letterSpacing: '0.06em' }}>
-          {String(entry['篇名'] || '').replace(/子不语卷[^ ]*-/,'').replace(/聊斋志异-/,'').replace(/阅微草堂笔记-/,'')}
+      </div>
+      
+      <h4 className="text-xl font-serif text-ink mb-4 group-hover:text-vermillion transition-colors flex items-center justify-between">
+        <span>《{title}》</span>
+        <span className="text-sm font-sans px-2 py-1 bg-paper border border-ink/10 shadow-sm" style={{ color: seal.color }}>
+          主体性 {score}
         </span>
-        <span className="text-xs px-2 py-0.5 shrink-0"
-          style={{ background: `${stratColor}18`, color: stratColor }}>
-          {stratKey}
-        </span>
-        <ScoreDots score={entry['_主体性']} />
-        <span className="shrink-0 ml-1" style={{ color: 'var(--ash)' }}>
-          {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-        </span>
-      </button>
-
-      {/* Expanded detail */}
-      {expanded && (
-        <div className="px-4 pb-4 border-t text-xs" style={{ borderColor: 'rgba(74,55,40,0.12)' }}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-            <div>
-              <p className="text-xs mb-1" style={{ color: 'var(--ash)', letterSpacing: '0.1em' }}>异类类型</p>
-              <p style={{ color: 'var(--ink-light)', lineHeight: 1.7 }}>{entry['异类类型'] || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs mb-1" style={{ color: 'var(--ash)', letterSpacing: '0.1em' }}>初始处境</p>
-              <p style={{ color: 'var(--ink-light)', lineHeight: 1.7 }}>{entry['初始处境'] || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs mb-1" style={{ color: 'var(--ash)', letterSpacing: '0.1em' }}>核心困境</p>
-              <p style={{ color: 'var(--ink-light)', lineHeight: 1.7 }}>{entry['核心困境'] || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs mb-1" style={{ color: 'var(--ash)', letterSpacing: '0.1em' }}>最终结局</p>
-              <p style={{ color: 'var(--ink-light)', lineHeight: 1.7 }}>{entry['最终结局_大类'] || '—'}</p>
-            </div>
-            {entry['主要手段'] && (
-              <div className="sm:col-span-2">
-                <p className="text-xs mb-1" style={{ color: 'var(--ash)', letterSpacing: '0.1em' }}>主要手段</p>
-                <p style={{ color: 'var(--ink-light)', lineHeight: 1.7 }}>{entry['主要手段']}</p>
-              </div>
-            )}
-            {entry['备注'] && !entry['备注'].includes('【分类存疑】') && (
-              <div className="sm:col-span-2">
-                <p className="text-xs mb-1" style={{ color: 'var(--ash)', letterSpacing: '0.1em' }}>研究按语</p>
-                <p style={{ color: 'var(--ink-light)', lineHeight: 1.8 }}>{entry['备注']}</p>
-              </div>
-            )}
-          </div>
-          <div className="mt-3 flex gap-2 flex-wrap">
-            {entry['策略转换'] === '是' && (
-              <span className="px-2 py-0.5 text-xs" style={{ background: 'rgba(139,26,26,0.1)', color: 'var(--vermillion)' }}>
-                策略转换
-              </span>
-            )}
-            {entry['策略自反性'] === '是' && (
-              <span className="px-2 py-0.5 text-xs" style={{ background: 'rgba(160,120,32,0.1)', color: 'var(--gold)' }}>
-                策略自反
-              </span>
-            )}
-            {entry['是否付出重大代价'] === '是' && (
-              <span className="px-2 py-0.5 text-xs" style={{ background: 'rgba(44,74,62,0.1)', color: 'var(--jade)' }}>
-                重大代价
-              </span>
-            )}
-          </div>
+      </h4>
+      
+      <div className="flex-1 space-y-3 text-sm">
+        <div className="flex justify-between items-center border-b border-ink/5 pb-2">
+          <span className="text-ash tracking-widest">起手策略</span>
+          <span style={{ color: STRAT_COLORS[stratKey] || 'var(--ink)' }}>{stratKey}</span>
         </div>
-      )}
+        
+        {hasTrans && entry['最终结局_大类'] && (
+          <div className="flex justify-between items-center border-b border-ink/5 pb-2">
+            <span className="text-vermillion tracking-widest">发生变局</span>
+            <span className="text-vermillion text-xs">是</span>
+          </div>
+        )}
+
+        <div className="pt-2 flex-1">
+          <span className="text-xs text-ash tracking-widest block mb-1">终局考语</span>
+          <span className="text-ink-light text-xs leading-relaxed line-clamp-3" title={entry['备注'] || entry['结局简述']}>
+            {entry['备注'] || entry['结局简述'] || '暂无详细记载。'}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -123,9 +81,8 @@ export default function DataExplorer({ entries }) {
   const [filterCorpus, setFilterCorpus] = useState('全部');
   const [filterStrat, setFilterStrat] = useState('全部');
   const [filterType, setFilterType] = useState('全部');
-  const [expandedId, setExpandedId] = useState(null);
   const [page, setPage] = useState(0);
-  const PAGE_SIZE = 20;
+  const PAGE_SIZE = 12; // 3 columns * 4 rows
 
   const filtered = useMemo(() => {
     return (entries || []).filter(e => {
@@ -152,10 +109,10 @@ export default function DataExplorer({ entries }) {
   const FilterBtn = ({ value, current, setter, children, color }) => (
     <button
       onClick={() => { setter(value); setPage(0); }}
-      className="text-xs px-3 py-1 border transition-all duration-150"
+      className="text-xs px-4 py-1.5 border transition-all duration-150"
       style={{
         borderColor: current === value ? (color || 'var(--vermillion)') : 'rgba(74,55,40,0.2)',
-        background: current === value ? `${color || '#8B1A1A'}18` : 'transparent',
+        background: current === value ? `${color || '#8B1A1A'}10` : 'transparent',
         color: current === value ? (color || 'var(--vermillion)') : 'var(--ash)',
         letterSpacing: '0.06em',
       }}
@@ -163,95 +120,102 @@ export default function DataExplorer({ entries }) {
   );
 
   return (
-    <div className="py-8 px-4 max-w-5xl mx-auto">
-      <div className="chapter-line mb-6">
-        <h3 style={{ fontFamily: "'Noto Serif SC', serif", fontSize: '1rem',
-          letterSpacing: '0.2em', color: 'var(--ink)', whiteSpace: 'nowrap' }}>
-          七、数据检索
-        </h3>
+    <div className="animate-fade-up">
+      <div className="flex items-center gap-4 mb-8 mt-12">
+        <h2 className="text-2xl font-serif text-ink tracking-widest" style={{ fontFamily: "'Ma Shan Zheng', serif" }}>
+          原典案卷检索
+        </h2>
+        <div className="h-px flex-1 bg-gradient-to-r from-ink/20 to-transparent"></div>
       </div>
 
-      {/* Search + filters */}
-      <div className="mb-4">
-        <div className="relative mb-3">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--ash)' }} />
+      {/* 筛选区 */}
+      <div className="bg-paper/60 border border-ink/10 p-6 shadow-sm mb-12 space-y-5">
+        <div className="relative mb-6">
+          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ash" />
           <input
             value={query}
             onChange={e => { setQuery(e.target.value); setPage(0); }}
-            placeholder="搜索篇名、类型、理论标签……"
-            className="w-full pl-8 pr-8 py-2 border text-sm outline-none"
-            style={{
-              borderColor: 'rgba(74,55,40,0.25)', background: 'rgba(245,237,214,0.7)',
-              color: 'var(--ink)', fontFamily: "'Noto Serif SC',serif",
-            }}
+            placeholder="搜索篇名、结局关键字或学者按语……"
+            className="w-full pl-12 pr-10 py-3 border border-ink/20 text-sm focus:outline-none focus:border-vermillion placeholder-ash/50 bg-paper transition-colors shadow-inner"
           />
           {query && (
-            <button onClick={() => setQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2"
-              style={{ color: 'var(--ash)' }}>
-              <X size={13} />
+            <button onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-ash hover:text-ink">
+              <X size={16} />
             </button>
           )}
         </div>
 
-        <div className="flex flex-wrap gap-1.5 mb-2">
-          <span className="text-xs self-center" style={{ color: 'var(--ash)' }}>语料库：</span>
-          {['全部','聊斋志异','阅微草堂笔记','子不语'].map(v => (
-            <FilterBtn key={v} value={v} current={filterCorpus} setter={setFilterCorpus}
-              color={CORPUS_COLOR[v]}>{v}</FilterBtn>
-          ))}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <span className="text-sm font-serif text-ash tracking-widest w-12">古籍</span>
+          <div className="flex flex-wrap gap-2">
+            {['全部','聊斋志异','阅微草堂笔记','子不语'].map(v => (
+              <FilterBtn key={v} value={v} current={filterCorpus} setter={setFilterCorpus} color={CORPUS_COLOR[v]}>{v}</FilterBtn>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-1.5 mb-2">
-          <span className="text-xs self-center" style={{ color: 'var(--ash)' }}>策略：</span>
-          {['全部','博弈型','情感型','顺从型','抗争型','非自主'].map(v => (
-            <FilterBtn key={v} value={v} current={filterStrat} setter={setFilterStrat}
-              color={STRAT_COLORS[v]}>{v}</FilterBtn>
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          <span className="text-xs self-center" style={{ color: 'var(--ash)' }}>类型：</span>
-          {['全部','狐','鬼','精','仙'].map(v => (
-            <FilterBtn key={v} value={v} current={filterType} setter={setFilterType}>{v}</FilterBtn>
-          ))}
+        
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <span className="text-sm font-serif text-ash tracking-widest w-12">策略</span>
+          <div className="flex flex-wrap gap-2">
+            {['全部','博弈型','情感型','顺从型','抗争型','非自主'].map(v => (
+              <FilterBtn key={v} value={v} current={filterStrat} setter={setFilterStrat} color={STRAT_COLORS[v]}>{v}</FilterBtn>
+            ))}
+          </div>
         </div>
 
-        <div className="flex items-center justify-between text-xs" style={{ color: 'var(--ash)' }}>
-          <span>共 <strong style={{ color: 'var(--ink)' }}>{filtered.length}</strong> 条结果</span>
-          <button onClick={resetFilters} className="underline" style={{ color: 'var(--ash)' }}>重置筛选</button>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <span className="text-sm font-serif text-ash tracking-widest w-12">本相</span>
+          <div className="flex flex-wrap gap-2">
+            {['全部','狐','鬼','精','仙'].map(v => (
+              <FilterBtn key={v} value={v} current={filterType} setter={setFilterType}>{v}</FilterBtn>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-4 mt-2 border-t border-ink/5">
+          <span className="text-xs text-ash tracking-widest">
+            寻得 <strong className="text-vermillion text-base mx-1 font-serif">{filtered.length}</strong> 卷符合条件的记录
+          </span>
+          <button onClick={resetFilters} className="text-xs text-ash hover:text-ink underline underline-offset-4 tracking-widest transition-colors">
+            重置所有条件
+          </button>
         </div>
       </div>
 
-      {/* Entry list */}
-      <div>
+      {/* 卷宗卡片流 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {paginated.map(entry => {
           const id = `${entry['语料库']}-${entry['序号']}`;
-          return (
-            <EntryCard
-              key={id}
-              entry={entry}
-              expanded={expandedId === id}
-              onToggle={() => setExpandedId(expandedId === id ? null : id)}
-            />
-          );
+          return <EntryCard key={id} entry={entry} />;
         })}
-        {filtered.length === 0 && (
-          <p className="text-center py-12 text-sm" style={{ color: 'var(--ash)' }}>
-            未找到符合条件的条目
-          </p>
-        )}
       </div>
 
-      {/* Pagination */}
+      {filtered.length === 0 && (
+        <div className="text-center py-24 border border-ink/5 bg-paper/30 mt-8">
+          <p className="text-ash tracking-widest">茫茫书海，未寻得相符卷宗。</p>
+        </div>
+      )}
+
+      {/* 分页 */}
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-6">
-          <button onClick={() => setPage(p => Math.max(0, p-1))} disabled={page===0}
-            className="px-3 py-1 border text-xs disabled:opacity-30"
-            style={{ borderColor: 'rgba(74,55,40,0.25)', color: 'var(--ash)' }}>上页</button>
-          <span className="px-3 py-1 text-xs" style={{ color: 'var(--ash)' }}>
-            {page+1} / {totalPages}
+        <div className="flex justify-center items-center gap-6 mt-16">
+          <button 
+            disabled={page === 0} 
+            onClick={() => setPage(p => p - 1)}
+            className="px-6 py-2 border border-ink/20 text-sm text-ink hover:bg-ink/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-serif tracking-widest"
+          >
+            上一卷
+          </button>
+          <span className="text-sm font-serif text-ash tracking-widest">
+            {page + 1} / {totalPages}
           </span>
-          <button onClick={() => setPage(p => Math.min(totalPages-1, p+1))} disabled={page===totalPages-1}
-            className="px-3 py-1 border text-xs disabled:opacity-30"
-            style={{ borderColor: 'rgba(74,55,40,0.25)', color: 'var(--ash)' }}>下页</button>
+          <button 
+            disabled={page === totalPages - 1} 
+            onClick={() => setPage(p => p + 1)}
+            className="px-6 py-2 border border-ink/20 text-sm text-ink hover:bg-ink/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-serif tracking-widest"
+          >
+            下一卷
+          </button>
         </div>
       )}
     </div>
