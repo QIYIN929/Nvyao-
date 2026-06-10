@@ -2,24 +2,24 @@
 @import "tailwindcss";
 
 :root {
-  /* 高级古典配色体系 */
-  --paper: #F5EDD6;          /* 泛黄的宣纸 */
-  --paper-dark: #E8D9B8;
-  --ink: #1A0A00;            /* 深邃玄青 */
-  --ink-light: #4A3728;
-  --vermillion: #9E2A2B;     /* 降饱和度的朱砂红，更高级 */
-  --vermillion-light: #B83A3B;
-  --jade: #2D4C3F;           /* 幽深玉色 */
-  --jade-light: #3D6B5C;
-  --gold: #A67B27;           /* 泥金 */
-  --gold-light: #C8982A;
-  --ash: #8B8178;            /* 香灰 */
+  /* 故宫博物院皇家色系体系 */
+  --paper: #F9F6F0;          /* 博物院展厅的暖白帛纸底色 */
+  --paper-dark: #EBE5D9;
+  --ink: #221814;            /* 殿宇深黑 */
+  --ink-light: #5C4D43;
+  --vermillion: #8C0F16;     /* 宫墙红 / 故宫红 (核心主色) */
+  --vermillion-light: #A71C24;
+  --jade: #1E3D31;           /* 点翠深绿 */
+  --jade-light: #2D5C4A;
+  --gold: #C29C57;           /* 琉璃黄 / 描金 (核心强调色) */
+  --gold-light: #DAB671;
+  --ash: #8C7B6D;            /* 宫砖灰 */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: var(--ink);
+  background: var(--paper);
   font-family: 'Noto Serif SC', 'STSong', 'SimSun', serif;
   color: var(--ink);
   overflow-x: hidden;
@@ -31,32 +31,46 @@ body {
 }
 
 /* =========================================
-   全局宣纸纹理（带微噪点，增加物理真实感）
+   全局帛纸纹理（带微噪点，增加物理真实感）
 ========================================= */
 .paper-bg {
   background-color: var(--paper);
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
 }
 
 /* =========================================
-   玻璃态与阴影（Glassmorphism & Shadows）
+   博物院展柜级 UI（Thin Gold Borders & Glass）
 ========================================= */
 .glass-panel {
-  background: rgba(245, 237, 214, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(74, 55, 40, 0.1);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  background: rgba(249, 246, 240, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(194, 156, 87, 0.3); /* 琉璃黄细描边 */
+  box-shadow: 0 10px 40px rgba(140, 15, 22, 0.04);
 }
 
 .hover-glow {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .hover-glow:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 40px rgba(158, 42, 43, 0.08);
-  border-color: rgba(158, 42, 43, 0.3);
+  box-shadow: 0 15px 50px rgba(194, 156, 87, 0.15);
+  border-color: rgba(194, 156, 87, 0.8);
+}
+
+/* 故宫特色的回字纹/双重框线 */
+.palace-border {
+  position: relative;
+  border: 1px solid rgba(194, 156, 87, 0.5); /* 琉璃黄外框 */
+  padding: 4px;
+}
+.palace-border::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(194, 156, 87, 0.2); /* 琉璃黄内框 */
+  pointer-events: none;
 }
 
 /* =========================================
@@ -67,7 +81,7 @@ body {
   to   { opacity: 1; filter: blur(0); }
 }
 @keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(30px); filter: blur(2px); }
+  from { opacity: 0; transform: translateY(40px); filter: blur(2px); }
   to   { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
 @keyframes slowFloat {
@@ -75,24 +89,31 @@ body {
   50% { transform: translateY(-10px); }
 }
 @keyframes pulseGlowRed {
-  0%, 100% { box-shadow: 0 0 10px rgba(158, 42, 43, 0.2); }
-  50% { box-shadow: 0 0 25px rgba(158, 42, 43, 0.5); }
+  0%, 100% { box-shadow: 0 0 10px rgba(140, 15, 22, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(140, 15, 22, 0.5); }
 }
 
-.animate-ink-fade   { animation: inkFade 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-.animate-fade-up    { animation: fadeSlideUp 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.animate-ink-fade   { animation: inkFade 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.animate-fade-up    { animation: fadeSlideUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 .animate-float      { animation: slowFloat 6s ease-in-out infinite; }
 .pulse-border-red   { animation: pulseGlowRed 3s ease-in-out infinite; }
 
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
 .delay-300 { animation-delay: 0.3s; }
+.delay-500 { animation-delay: 0.5s; }
 
 /* =========================================
-   文本特效（印章、下划线、字距）
+   文本特效（纵排、印章、字距）
 ========================================= */
 .tracking-widest-plus {
-  letter-spacing: 0.2em;
+  letter-spacing: 0.25em;
+}
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0.3em;
 }
 
 .seal {
@@ -120,10 +141,10 @@ body {
 ========================================= */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--paper-dark); }
-::-webkit-scrollbar-thumb { background: var(--ash); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--vermillion); }
 
 .recharts-text { font-family: 'Noto Serif SC', serif !important; font-size: 12px !important; }
-.recharts-tooltip-cursor { fill: rgba(74, 55, 40, 0.05) !important; }
+.recharts-tooltip-cursor { fill: rgba(194, 156, 87, 0.08) !important; }
 
 
