@@ -28,6 +28,10 @@ export default function ResearchPage() {
       .catch(() => setEntries([]));
   }, []);
 
+  // Safe fallback for stats parsing
+  const totalEntries = stats?.globalStats?.total || 0;
+  const avgSubjectivity = stats?.globalStats?.score_avg?.['全部'] || 0;
+
   return (
     <div className="min-h-screen paper-bg font-sans pb-24 text-ink selection-bg-ink">
       {/* Top nav */}
@@ -89,11 +93,11 @@ export default function ResearchPage() {
               <span className="text-ash animate-pulse">调取卷宗中……</span>
             ) : stats ? (
               <div className="flex gap-8 bg-paper border border-ink/10 px-8 py-4 shadow-sm">
-                <div className="text-center"><div className="text-2xl font-serif text-vermillion mb-1">{stats.globalStats.total}</div><div className="text-xs text-ash tracking-wider">有效卷宗</div></div>
+                <div className="text-center"><div className="text-2xl font-serif text-vermillion mb-1">{totalEntries}</div><div className="text-xs text-ash tracking-wider">有效卷宗</div></div>
                 <div className="w-px bg-ink/10"></div>
                 <div className="text-center"><div className="text-2xl font-serif text-gold mb-1">5</div><div className="text-xs text-ash tracking-wider">策略路径</div></div>
                 <div className="w-px bg-ink/10"></div>
-                <div className="text-center"><div className="text-2xl font-serif text-jade mb-1">{(stats.globalStats.avgSubjectivity).toFixed(1)}</div><div className="text-xs text-ash tracking-wider">平均主体性</div></div>
+                <div className="text-center"><div className="text-2xl font-serif text-jade mb-1">{Number(avgSubjectivity).toFixed(1)}</div><div className="text-xs text-ash tracking-wider">平均主体性</div></div>
               </div>
             ) : null}
           </div>
