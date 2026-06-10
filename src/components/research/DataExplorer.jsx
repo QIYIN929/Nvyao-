@@ -1,5 +1,6 @@
 ﻿import { useState, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogClose } from '../ui/dialog';
 
 const CORPUS_COLOR = {
   '聊斋志异': '#8B1A1A',
@@ -27,52 +28,106 @@ function EntryCard({ entry }) {
   const seal = getSealByScore(score);
   const title = String(entry['篇名'] || '').replace(/子不语卷[^ ]*-/,'').replace(/聊斋志异-/,'').replace(/阅微草堂笔记-/,'');
   const hasTrans = entry['策略转换'] === '是';
+  
+  // Format the full text details for the dialog
+  const details = entry['备注'] || entry['结局简述'] || '暂无详细记载。';
 
   return (
-    <div className="group relative bg-paper/40 border border-ink/10 p-5 hover:border-ink/30 transition-all shadow-sm hover:shadow-md flex flex-col h-full overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: corpusColor }}></div>
-      <div className="absolute -bottom-4 -right-4 w-24 h-24 flex items-center justify-center pointer-events-none opacity-[0.03] group-hover:opacity-[0.08] transition-opacity"
-        style={{ color: seal.color, fontFamily: "'Ma Shan Zheng', serif", fontSize: '6rem' }}>
-        {seal.name.charAt(0)}
-      </div>
+    <Dialog>
+      <DialogTrigger asChild>
+        <div className="group relative bg-paper/40 border border-ink/10 p-5 hover:border-ink/30 transition-all shadow-sm hover:shadow-md flex flex-col h-full overflow-hidden cursor-pointer text-left w-full hover:-translate-y-1">
+          <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: corpusColor }}></div>
+          <div className="absolute -bottom-4 -right-4 w-24 h-24 flex items-center justify-center pointer-events-none opacity-[0.03] group-hover:opacity-[0.08] transition-opacity"
+            style={{ color: seal.color, fontFamily: "'Ma Shan Zheng', serif", fontSize: '6rem' }}>
+            {seal.name.charAt(0)}
+          </div>
+          
+          <div className="mb-4 flex items-center gap-2">
+            <span className="text-xs px-2 py-0.5 border" style={{ borderColor: `${corpusColor}40`, color: corpusColor, background: `${corpusColor}10` }}>
+              {entry['语料库']}
+            </span>
+            <span className="text-xs px-2 py-0.5 border border-ink/10 text-ash bg-ink/5">
+              {entry['异类类型'] || '未知'}
+            </span>
+          </div>
+          
+          <h4 className="text-xl font-serif text-ink mb-4 group-hover:text-vermillion transition-colors flex items-center justify-between">
+            <span>《{title}》</span>
+            <span className="text-sm font-sans px-2 py-1 bg-paper border border-ink/10 shadow-sm" style={{ color: seal.color }}>
+              主体性 {score}
+            </span>
+          </h4>
+          
+          <div className="flex-1 space-y-3 text-sm">
+            <div className="flex justify-between items-center border-b border-ink/5 pb-2">
+              <span className="text-ash tracking-widest">起手策略</span>
+              <span style={{ color: STRAT_COLORS[stratKey] || 'var(--ink)' }}>{stratKey}</span>
+            </div>
+            
+            {hasTrans && entry['最终结局_大类'] && (
+              <div className="flex justify-between items-center border-b border-ink/5 pb-2">
+                <span className="text-vermillion tracking-widest">发生变局</span>
+                <span className="text-vermillion text-xs">是</span>
+              </div>
+            )}
+
+            <div className="pt-2 flex-1">
+              <span className="text-xs text-ash tracking-widest block mb-1">终局考语</span>
+              <span className="text-ink-light text-xs leading-relaxed line-clamp-3" title={details}>
+                {details}
+              </span>
+            </div>
+          </div>
+        </div>
+      </DialogTrigger>
       
-      <div className="mb-4 flex items-center gap-2">
-        <span className="text-xs px-2 py-0.5 border" style={{ borderColor: `${corpusColor}40`, color: corpusColor, background: `${corpusColor}10` }}>
-          {entry['语料库']}
-        </span>
-        <span className="text-xs px-2 py-0.5 border border-ink/10 text-ash bg-ink/5">
-          {entry['异类类型'] || '未知'}
-        </span>
-      </div>
-      
-      <h4 className="text-xl font-serif text-ink mb-4 group-hover:text-vermillion transition-colors flex items-center justify-between">
-        <span>《{title}》</span>
-        <span className="text-sm font-sans px-2 py-1 bg-paper border border-ink/10 shadow-sm" style={{ color: seal.color }}>
-          主体性 {score}
-        </span>
-      </h4>
-      
-      <div className="flex-1 space-y-3 text-sm">
-        <div className="flex justify-between items-center border-b border-ink/5 pb-2">
-          <span className="text-ash tracking-widest">起手策略</span>
-          <span style={{ color: STRAT_COLORS[stratKey] || 'var(--ink)' }}>{stratKey}</span>
+      <DialogContent className="max-w-2xl min-h-[500px] flex flex-col sm:flex-row gap-8 overflow-hidden bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3CfeColorMatrix type=%22saturate%22 values=%220%22/%3E%3C/filter%3E%3Crect width=%22400%22 height=%22400%22 filter=%22url(%23noise)%22 opacity=%220.04%22/%3E%3C/svg%3E')] bg-[#F9F6F0]">
+        
+        {/* 左侧信息区 (Modern) */}
+        <div className="flex-1 flex flex-col border-r border-[#C29C57]/30 pr-6">
+          <div className="mb-6">
+            <span className="text-xs px-2 py-1 border" style={{ borderColor: `${corpusColor}40`, color: corpusColor, background: `${corpusColor}10` }}>
+              {entry['语料库']}
+            </span>
+          </div>
+          <DialogTitle>《{title}》</DialogTitle>
+          <div className="mt-6 space-y-4">
+            <div className="flex justify-between border-b border-[#221814]/10 pb-2">
+              <span className="text-sm text-[#8C7B6D] tracking-widest">异类本相</span>
+              <span className="text-sm text-[#221814]">{entry['异类类型'] || '未知'}</span>
+            </div>
+            <div className="flex justify-between border-b border-[#221814]/10 pb-2">
+              <span className="text-sm text-[#8C7B6D] tracking-widest">初始策略</span>
+              <span className="text-sm" style={{ color: STRAT_COLORS[stratKey] }}>{stratKey}</span>
+            </div>
+            <div className="flex justify-between border-b border-[#221814]/10 pb-2">
+              <span className="text-sm text-[#8C7B6D] tracking-widest">结局大类</span>
+              <span className="text-sm text-[#221814]">{entry['最终结局_大类'] || '未知'}</span>
+            </div>
+            <div className="flex justify-between border-b border-[#221814]/10 pb-2">
+              <span className="text-sm text-[#8C7B6D] tracking-widest">主体性评分</span>
+              <span className="text-sm font-bold" style={{ color: seal.color }}>{score} ({seal.name})</span>
+            </div>
+          </div>
+          <DialogDescription className="mt-auto pt-6 text-xs text-[#8C7B6D]">
+            编号：{entry['序号']}
+          </DialogDescription>
+        </div>
+
+        {/* 右侧：卷轴竖排文字区 (Ancient) */}
+        <div className="flex-1 relative flex justify-end">
+          <div className="absolute top-0 bottom-0 right-0 w-8 border-l border-[#8C0F16]/20 flex items-center justify-center">
+             <span className="text-[#8C0F16]/40 vertical-text text-sm">志怪案卷提取</span>
+          </div>
+          <div className="pr-12 h-[400px] overflow-x-auto overflow-y-hidden vertical-text text-left text-[#5C4D43] leading-loose tracking-[0.3em] text-[15px] p-4 custom-scrollbar">
+            {details.split('。').map((sentence, idx) => (
+              sentence.trim() ? <p key={idx} className="mb-2">{sentence.trim()}。</p> : null
+            ))}
+          </div>
         </div>
         
-        {hasTrans && entry['最终结局_大类'] && (
-          <div className="flex justify-between items-center border-b border-ink/5 pb-2">
-            <span className="text-vermillion tracking-widest">发生变局</span>
-            <span className="text-vermillion text-xs">是</span>
-          </div>
-        )}
-
-        <div className="pt-2 flex-1">
-          <span className="text-xs text-ash tracking-widest block mb-1">终局考语</span>
-          <span className="text-ink-light text-xs leading-relaxed line-clamp-3" title={entry['备注'] || entry['结局简述']}>
-            {entry['备注'] || entry['结局简述'] || '暂无详细记载。'}
-          </span>
-        </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
