@@ -1,4 +1,4 @@
-import {
+﻿import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
 } from 'recharts';
@@ -137,7 +137,7 @@ export default function Dashboard({ stats }) {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-xs text-ash mt-4 text-center tracking-widest border-t border-ink/5 pt-4">
+            <p className="text-xs text-ash mt-4 text-center tracking-widest-plus border-t border-ink/5 pt-4">
               博弈型主导（{boyiCount} 例，占 {boyiPercent}%），印证了异类在人间生存之务实。
             </p>
           </div>

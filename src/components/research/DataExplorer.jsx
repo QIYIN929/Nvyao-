@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 
 const CORPUS_COLOR = {
@@ -191,14 +191,14 @@ export default function DataExplorer({ entries }) {
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-24 border border-ink/5 bg-paper/30 mt-8">
+        <div className="text-center py-24 border border-gold/20 bg-paper-dark/10 mt-8 palace-border">
           <p className="text-ash tracking-widest">茫茫书海，未寻得相符卷宗。</p>
         </div>
       )}
 
       {/* 分页 */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-6 mt-16">
+        <div className="flex justify-center items-center gap-8 mt-16">
           <button 
             disabled={page === 0} 
             onClick={() => setPage(p => p - 1)}
