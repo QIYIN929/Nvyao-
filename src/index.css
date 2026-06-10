@@ -2,17 +2,18 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #F5EDD6;
+  /* 高级古典配色体系 */
+  --paper: #F5EDD6;          /* 泛黄的宣纸 */
   --paper-dark: #E8D9B8;
-  --ink: #1A0A00;
+  --ink: #1A0A00;            /* 深邃玄青 */
   --ink-light: #4A3728;
-  --vermillion: #8B1A1A;
-  --vermillion-light: #C53030;
-  --jade: #2C4A3E;
+  --vermillion: #9E2A2B;     /* 降饱和度的朱砂红，更高级 */
+  --vermillion-light: #B83A3B;
+  --jade: #2D4C3F;           /* 幽深玉色 */
   --jade-light: #3D6B5C;
-  --gold: #A07820;
+  --gold: #A67B27;           /* 泥金 */
   --gold-light: #C8982A;
-  --ash: #6B5B4E;
+  --ash: #8B8178;            /* 香灰 */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,74 +30,71 @@ body {
   min-height: 100vh;
 }
 
-/* Paper texture overlay */
+/* =========================================
+   全局宣纸纹理（带微噪点，增加物理真实感）
+========================================= */
 .paper-bg {
   background-color: var(--paper);
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
 }
 
-/* Ink fade-in animation */
+/* =========================================
+   玻璃态与阴影（Glassmorphism & Shadows）
+========================================= */
+.glass-panel {
+  background: rgba(245, 237, 214, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 55, 40, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+.hover-glow {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hover-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(158, 42, 43, 0.08);
+  border-color: rgba(158, 42, 43, 0.3);
+}
+
+/* =========================================
+   幽微动画与转场效果
+========================================= */
 @keyframes inkFade {
-  from { opacity: 0; filter: blur(2px); }
+  from { opacity: 0; filter: blur(4px); }
   to   { opacity: 1; filter: blur(0); }
 }
-@keyframes inkDrop {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes sealStamp {
-  0%   { transform: scale(1.4) rotate(-8deg); opacity: 0; }
-  60%  { transform: scale(0.95) rotate(1deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-@keyframes strikeThrough {
-  from { width: 0; }
-  to   { width: 100%; }
-}
-@keyframes flicker {
-  0%,100% { opacity: 1; }
-  50% { opacity: 0.85; }
-}
-@keyframes pulse-glow {
-  0%,100% { box-shadow: 0 0 8px rgba(139,26,26,0.3); }
-  50% { box-shadow: 0 0 24px rgba(139,26,26,0.7); }
-}
 @keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(30px); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes slowFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes pulseGlowRed {
+  0%, 100% { box-shadow: 0 0 10px rgba(158, 42, 43, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(158, 42, 43, 0.5); }
 }
 
-.animate-ink-fade   { animation: inkFade 0.8s ease forwards; }
-.animate-ink-drop   { animation: inkDrop 0.6s ease forwards; }
-.animate-seal       { animation: sealStamp 0.5s cubic-bezier(.17,.67,.38,1.2) forwards; }
-.animate-fade-up    { animation: fadeSlideUp 0.7s ease forwards; }
-.animate-flicker    { animation: flicker 3s ease-in-out infinite; }
-.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+.animate-ink-fade   { animation: inkFade 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.animate-fade-up    { animation: fadeSlideUp 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.animate-float      { animation: slowFloat 6s ease-in-out infinite; }
+.pulse-border-red   { animation: pulseGlowRed 3s ease-in-out infinite; }
 
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
 .delay-300 { animation-delay: 0.3s; }
-.delay-500 { animation-delay: 0.5s; }
-.delay-700 { animation-delay: 0.7s; }
-.delay-1000 { animation-delay: 1s; }
 
-/* Strikethrough correction effect */
-.correction {
-  position: relative;
-  display: inline-block;
-  color: var(--ash);
-}
-.correction::after {
-  content: '';
-  position: absolute;
-  left: 0; top: 50%;
-  height: 2px;
-  background: var(--vermillion);
-  animation: strikeThrough 0.6s ease forwards;
+/* =========================================
+   文本特效（印章、下划线、字距）
+========================================= */
+.tracking-widest-plus {
+  letter-spacing: 0.2em;
 }
 
-/* Seal stamp */
 .seal {
   font-family: 'Ma Shan Zheng', serif;
   border: 2px solid var(--vermillion);
@@ -108,31 +106,24 @@ body {
   letter-spacing: 0.1em;
 }
 
-/* Scrollbar */
+.seal-bg-watermark {
+  font-family: 'Ma Shan Zheng', serif;
+  position: absolute;
+  color: var(--vermillion);
+  opacity: 0.03;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* =========================================
+   滚动条与图表优化
+========================================= */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--paper-dark); }
 ::-webkit-scrollbar-thumb { background: var(--ash); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--vermillion); }
 
-/* Chapter divider */
-.chapter-line {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--ash);
-}
-.chapter-line::before,
-.chapter-line::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--ash), transparent);
-}
-
-/* Score badge */
-.score-ash    { background: #6B5B4E; color: #F5EDD6; }
-.score-silver { background: #7C8FA0; color: #F5EDD6; }
-.score-gold   { background: #A07820; color: #F5EDD6; }
-
-/* Research page */
 .recharts-text { font-family: 'Noto Serif SC', serif !important; font-size: 12px !important; }
+.recharts-tooltip-cursor { fill: rgba(74, 55, 40, 0.05) !important; }
+
 
