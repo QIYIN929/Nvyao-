@@ -43,32 +43,49 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function Dashboard({ stats }) {
-  if (!stats) return null;
+  // Safety check to ensure we don't crash if stats are empty
+  if (!stats || !stats.globalStats) return (
+    <div className="py-20 text-center text-ash tracking-widest">
+      无法解析案卷数据，请检查 data.json 格式。
+    </div>
+  );
+  
   const { globalStats } = stats;
+
+  // Safe fallbacks for all data extractions
+  const strategyDist = globalStats.strategy_dist || {};
+  const scoreDistRaw = globalStats.score_dist || Array(10).fill(0);
+  const byCorpus = globalStats.by_corpus || {};
+  const transferRate = globalStats.transfer_rate || {};
+  const scoreAvg = globalStats.score_avg || {};
 
   const stratTotal = STRAT_ORDER.map(s => ({
     name: s.replace('型','').replace('非自主','认命'),
-    数量: globalStats.strategy_dist[s] || 0,
+    数量: strategyDist[s] || 0,
     fill: PALETTE[s],
   }));
 
-  const scoreDist = globalStats.score_dist.map((cnt, i) => ({
+  const scoreDist = scoreDistRaw.map((cnt, i) => ({
     name: String(i),
-    数量: cnt,
+    数量: cnt || 0,
     fill: i <= 2 ? '#6B5B4E' : i <= 5 ? '#7C8FA0' : i <= 7 ? '#A07820' : '#8B1A1A',
   }));
 
   const corpusData = [
-    { name: '聊斋志异', 条目: globalStats.by_corpus['聊斋志异'], 转换率: globalStats.transfer_rate['聊斋志异'], 主体性均值: globalStats.score_avg['聊斋志异'] },
-    { name: '阅微草堂笔记', 条目: globalStats.by_corpus['阅微草堂笔记'], 转换率: globalStats.transfer_rate['阅微草堂笔记'], 主体性均值: globalStats.score_avg['阅微草堂笔记'] },
-    { name: '子不语', 条目: globalStats.by_corpus['子不语'], 转换率: globalStats.transfer_rate['子不语'], 主体性均值: globalStats.score_avg['子不语'] },
+    { name: '聊斋志异', 条目: byCorpus['聊斋志异'] || 0, 转换率: transferRate['聊斋志异'] || 0, 主体性均值: scoreAvg['聊斋志异'] || 0 },
+    { name: '阅微草堂笔记', 条目: byCorpus['阅微草堂笔记'] || 0, 转换率: transferRate['阅微草堂笔记'] || 0, 主体性均值: scoreAvg['阅微草堂笔记'] || 0 },
+    { name: '子不语', 条目: byCorpus['子不语'] || 0, 转换率: transferRate['子不语'] || 0, 主体性均值: scoreAvg['子不语'] || 0 },
   ];
 
   const outcomeData = (globalStats.outcome_top || []).slice(0, 8).map((o) => ({
-    name: o.label.length > 8 ? o.label.slice(0,8)+'…' : o.label,
-    value: o.count,
+    name: o.label && o.label.length > 8 ? o.label.slice(0,8)+'…' : (o.label || '未知'),
+    value: o.count || 0,
   }));
+  
   const PIE_COLORS = ['#8B1A1A','#A07820','#2C4A3E','#7C8FA0','#6B5B4E','#9DB5C8','#C8982A','#3D6B5C'];
+  const boyiCount = strategyDist['博弈型'] || 0;
+  const totalEntries = globalStats.total || 1;
+  const boyiPercent = Math.round((boyiCount / totalEntries) * 100) || 0;
 
   return (
     <div className="animate-fade-up">
@@ -87,7 +104,7 @@ export default function Dashboard({ stats }) {
               </div>
               <div className="flex justify-between items-end border-b border-ink/5 pb-2">
                 <span className="text-ash tracking-widest">平均主体性</span>
-                <span className="text-xl" style={{ color: PALETTE[c.name] }}>{c.主体性均值}</span>
+                <span className="text-xl" style={{ color: PALETTE[c.name] }}>{Number(c.主体性均值).toFixed(1)}</span>
               </div>
               <div className="flex justify-between items-end pb-2">
                 <span className="text-ash tracking-widest">策略转换率</span>
@@ -117,7 +134,7 @@ export default function Dashboard({ stats }) {
               </ResponsiveContainer>
             </div>
             <p className="text-xs text-ash mt-4 text-center tracking-widest border-t border-ink/5 pt-4">
-              博弈型主导（{globalStats.strategy_dist['博弈型']} 例，占 {Math.round(globalStats.strategy_dist['博弈型']/globalStats.total*100)}%），印证了异类在人间生存之务实。
+              博弈型主导（{boyiCount} 例，占 {boyiPercent}%），印证了异类在人间生存之务实。
             </p>
           </div>
         </div>
@@ -153,20 +170,24 @@ export default function Dashboard({ stats }) {
         <div className="lg:col-span-1">
           <SectionTitle>终局走势</SectionTitle>
           <div className="bg-paper/40 border border-ink/10 p-6 h-[320px] shadow-sm flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={outcomeData} cx="50%" cy="50%" innerRadius={40} outerRadius={90}
-                  dataKey="value" nameKey="name" label={({ name }) => `${name}`}
-                  labelLine={false}
-                  stroke="var(--paper)" strokeWidth={2}
-                  style={{ fontSize: '11px', fontFamily: "'Noto Serif SC',serif", fill: 'var(--ink)' }}>
-                  {outcomeData.map((_, i) => (
-                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
+            {outcomeData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={outcomeData} cx="50%" cy="50%" innerRadius={40} outerRadius={90}
+                    dataKey="value" nameKey="name" label={({ name }) => `${name}`}
+                    labelLine={false}
+                    stroke="var(--paper)" strokeWidth={2}
+                    style={{ fontSize: '11px', fontFamily: "'Noto Serif SC',serif", fill: 'var(--ink)' }}>
+                    {outcomeData.map((_, i) => (
+                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <span className="text-ash text-sm">暂无终局数据</span>
+            )}
           </div>
         </div>
 
