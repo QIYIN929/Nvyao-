@@ -1,6 +1,6 @@
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend,
+  PieChart, Pie, Cell,
 } from 'recharts';
 
 const PALETTE = {
@@ -156,7 +156,7 @@ export default function Dashboard({ stats }) {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={outcomeData} cx="50%" cy="50%" innerRadius={40} outerRadius={90}
-                  dataKey="value" nameKey="name" label={({ name, percent }) => `${name}`}
+                  dataKey="value" nameKey="name" label={({ name }) => `${name}`}
                   labelLine={false}
                   stroke="var(--paper)" strokeWidth={2}
                   style={{ fontSize: '11px', fontFamily: "'Noto Serif SC',serif", fill: 'var(--ink)' }}>
