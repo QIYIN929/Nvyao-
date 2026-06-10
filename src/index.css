@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&family=Ma+Shan+Zheng&display=swap');
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 
 :root {
   /* 故宫博物院皇家色系体系 */
@@ -134,6 +135,21 @@ body {
   opacity: 0.03;
   pointer-events: none;
   user-select: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 2px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--vermillion);
 }
 
 /* =========================================
