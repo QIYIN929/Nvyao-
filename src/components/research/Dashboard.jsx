@@ -96,12 +96,12 @@ export default function Dashboard({ stats }) {
       <SectionTitle>三书全览考</SectionTitle>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
         {corpusData.map(c => (
-          <div key={c.name} className="relative p-6 bg-paper/40 border border-ink/10 hover:border-ink/30 transition-colors shadow-sm">
+          <div key={c.name} className="relative p-6 bg-paper-dark/20 palace-border hover-glow flex flex-col items-center">
             <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: PALETTE[c.name] }}></div>
             <h3 className="text-xl mb-6 text-center tracking-widest" style={{ color: PALETTE[c.name], fontFamily: "'Ma Shan Zheng', serif" }}>
               {c.name}
             </h3>
-            <div className="space-y-4 text-sm font-serif">
+            <div className="space-y-4 text-sm font-serif w-full max-w-[200px]">
               <div className="flex justify-between items-end border-b border-ink/5 pb-2">
                 <span className="text-ash tracking-widest">录入案卷</span>
                 <span className="text-xl text-ink">{c.条目}</span>
@@ -198,15 +198,15 @@ export default function Dashboard({ stats }) {
         <div className="lg:col-span-2">
           <SectionTitle>核心考语</SectionTitle>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 h-[320px]">
-            <div className="p-6 bg-paper/40 border-l-2 shadow-sm flex flex-col justify-center" style={{ borderColor: '#8B1A1A' }}>
-              <h4 className="text-lg font-serif mb-4 tracking-widest text-[#8B1A1A]">聊斋变局最频</h4>
-              <p className="text-sm leading-relaxed text-ink-light tracking-wide text-justify">
+            <div className="p-8 palace-border bg-gradient-to-br from-paper to-[#8C0F16]/5 flex flex-col justify-center items-center text-center" style={{ borderColor: '#8B1A1A' }}>
+              <h4 className="text-xl font-serif mb-6 tracking-widest-plus text-[#8B1A1A]">聊斋变局最频</h4>
+              <p className="text-sm leading-loose text-ink-light tracking-widest text-justify max-w-[240px]">
                 45.3% 的聊斋异类在叙事中改变了应对策略，远高于阅微（19.9%）与子不语（26.8%）。蒲松龄赋予了她们更幽深的叙事空间，使她们得以在绝境中完成从妥协到觉醒的心理蜕变。
               </p>
             </div>
-            <div className="p-6 bg-paper/40 border-l-2 shadow-sm flex flex-col justify-center" style={{ borderColor: '#2C4A3E' }}>
-              <h4 className="text-lg font-serif mb-4 tracking-widest text-[#2C4A3E]">子不语独见抗争</h4>
-              <p className="text-sm leading-relaxed text-ink-light tracking-wide text-justify">
+            <div className="p-8 palace-border bg-gradient-to-br from-paper to-[#8C0F16]/5 flex flex-col justify-center items-center text-center" style={{ borderColor: '#2C4A3E' }}>
+              <h4 className="text-xl font-serif mb-6 tracking-widest-plus text-[#2C4A3E]">子不语独见抗争</h4>
+              <p className="text-sm leading-loose text-ink-light tracking-widest text-justify max-w-[240px]">
                 全样本中仅有的 8 例极端「抗争型」策略，竟悉数出自《子不语》。在袁枚笔下的市井江湖中，异类不再一味隐忍，她们敢于撕破脸皮，以暴烈之姿向礼教与天威拔剑。
               </p>
             </div>

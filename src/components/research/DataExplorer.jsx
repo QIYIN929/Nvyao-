@@ -129,14 +129,14 @@ export default function DataExplorer({ entries }) {
       </div>
 
       {/* 筛选区 */}
-      <div className="bg-paper/60 border border-ink/10 p-6 shadow-sm mb-12 space-y-5">
-        <div className="relative mb-6">
+      <div className="palace-border bg-paper-dark/20 p-8 shadow-sm mb-12 space-y-6 flex flex-col items-center">
+        <div className="relative w-full max-w-2xl mb-2">
           <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ash" />
           <input
             value={query}
             onChange={e => { setQuery(e.target.value); setPage(0); }}
             placeholder="搜索篇名、结局关键字或学者按语……"
-            className="w-full pl-12 pr-10 py-3 border border-ink/20 text-sm focus:outline-none focus:border-vermillion placeholder-ash/50 bg-paper transition-colors shadow-inner"
+            className="w-full pl-12 pr-10 py-3 border border-gold/40 text-sm focus:outline-none focus:border-vermillion placeholder-ash/50 bg-paper transition-colors shadow-inner text-center"
           />
           {query && (
             <button onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-ash hover:text-ink">
@@ -145,34 +145,34 @@ export default function DataExplorer({ entries }) {
           )}
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <span className="text-sm font-serif text-ash tracking-widest w-12">古籍</span>
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 w-full">
+          <span className="text-sm font-serif text-gold tracking-widest w-12 text-center">古籍</span>
+          <div className="flex flex-wrap justify-center gap-3">
             {['全部','聊斋志异','阅微草堂笔记','子不语'].map(v => (
               <FilterBtn key={v} value={v} current={filterCorpus} setter={setFilterCorpus} color={CORPUS_COLOR[v]}>{v}</FilterBtn>
             ))}
           </div>
         </div>
         
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <span className="text-sm font-serif text-ash tracking-widest w-12">策略</span>
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 w-full">
+          <span className="text-sm font-serif text-gold tracking-widest w-12 text-center">策略</span>
+          <div className="flex flex-wrap justify-center gap-3">
             {['全部','博弈型','情感型','顺从型','抗争型','非自主'].map(v => (
               <FilterBtn key={v} value={v} current={filterStrat} setter={setFilterStrat} color={STRAT_COLORS[v]}>{v}</FilterBtn>
             ))}
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <span className="text-sm font-serif text-ash tracking-widest w-12">本相</span>
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 w-full">
+          <span className="text-sm font-serif text-gold tracking-widest w-12 text-center">本相</span>
+          <div className="flex flex-wrap justify-center gap-3">
             {['全部','狐','鬼','精','仙'].map(v => (
               <FilterBtn key={v} value={v} current={filterType} setter={setFilterType}>{v}</FilterBtn>
             ))}
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-4 mt-2 border-t border-ink/5">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6 mt-4 border-t border-gold/20 w-full max-w-2xl">
           <span className="text-xs text-ash tracking-widest">
             寻得 <strong className="text-vermillion text-base mx-1 font-serif">{filtered.length}</strong> 卷符合条件的记录
           </span>
