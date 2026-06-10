@@ -15,11 +15,15 @@ const STRAT_ORDER = ['博弈型','情感型','顺从型','抗争型','非自主'
 
 function SectionTitle({ children }) {
   return (
-    <div className="flex items-center gap-4 mb-8 mt-12">
-      <h2 className="text-2xl font-serif text-ink tracking-widest" style={{ fontFamily: "'Ma Shan Zheng', serif" }}>
-        {children}
-      </h2>
-      <div className="h-px flex-1 bg-gradient-to-r from-ink/20 to-transparent"></div>
+    <div className="flex flex-col items-center justify-center gap-3 mb-10 mt-16 animate-fade-up">
+      <div className="flex items-center gap-4 w-full max-w-sm">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gold/40"></div>
+        <h2 className="text-2xl font-serif text-ink tracking-widest-plus text-center" style={{ fontFamily: "'Ma Shan Zheng', serif" }}>
+          {children}
+        </h2>
+        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gold/40"></div>
+      </div>
+      <div className="w-12 h-[2px] bg-vermillion/40"></div>
     </div>
   );
 }
