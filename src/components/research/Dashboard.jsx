@@ -92,43 +92,46 @@ export default function Dashboard({ stats }) {
   const boyiPercent = Math.round((boyiCount / totalEntries) * 100) || 0;
 
   return (
-    <div className="animate-fade-up">
+    <div className="animate-fade-up flex flex-col items-center w-full">
       <SectionTitle>三书全览考</SectionTitle>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+      
+      {/* 居中三书数据卡片 */}
+      <div className="flex flex-col md:flex-row justify-center gap-6 mb-16 w-full max-w-5xl">
         {corpusData.map(c => (
-          <div key={c.name} className="relative p-6 bg-paper-dark/20 palace-border hover-glow flex flex-col items-center">
-            <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: PALETTE[c.name] }}></div>
-            <h3 className="text-xl mb-6 text-center tracking-widest" style={{ color: PALETTE[c.name], fontFamily: "'Ma Shan Zheng', serif" }}>
+          <div key={c.name} className="relative p-6 bg-paper-dark/20 palace-border hover-glow flex flex-col items-center justify-center flex-1">
+            <div className="absolute top-0 left-0 w-full h-[2px]" style={{ backgroundColor: PALETTE[c.name] }}></div>
+            <h3 className="text-xl mb-6 text-center tracking-widest-plus mt-2" style={{ color: PALETTE[c.name], fontFamily: "'Ma Shan Zheng', serif" }}>
               {c.name}
             </h3>
             <div className="space-y-4 text-sm font-serif w-full max-w-[200px]">
-              <div className="flex justify-between items-end border-b border-ink/5 pb-2">
+              <div className="flex justify-between items-center border-b border-ink/10 pb-2">
                 <span className="text-ash tracking-widest">录入案卷</span>
-                <span className="text-xl text-ink">{c.条目}</span>
+                <span className="text-xl text-ink font-bold">{c.条目}</span>
               </div>
-              <div className="flex justify-between items-end border-b border-ink/5 pb-2">
+              <div className="flex justify-between items-center border-b border-ink/10 pb-2">
                 <span className="text-ash tracking-widest">平均主体性</span>
-                <span className="text-xl" style={{ color: PALETTE[c.name] }}>{Number(c.主体性均值).toFixed(1)}</span>
+                <span className="text-xl font-bold" style={{ color: PALETTE[c.name] }}>{Number(c.主体性均值).toFixed(1)}</span>
               </div>
-              <div className="flex justify-between items-end pb-2">
+              <div className="flex justify-between items-center pb-2">
                 <span className="text-ash tracking-widest">策略转换率</span>
-                <span className="text-xl text-ink">{c.转换率}%</span>
+                <span className="text-xl text-ink font-bold">{c.转换率}%</span>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-        <div>
+      <div className="flex flex-col lg:flex-row justify-center gap-12 mb-16 w-full max-w-5xl">
+        {/* 策略流派志 居中 */}
+        <div className="flex flex-col items-center flex-1">
           <SectionTitle>策略流派志</SectionTitle>
-          <div className="bg-paper/40 border border-ink/10 p-6 shadow-sm">
-            <div className="h-[280px]">
+          <div className="bg-paper-dark/20 palace-border p-6 shadow-sm w-full flex flex-col items-center">
+            <div className="h-[280px] w-full max-w-sm">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stratTotal} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
                   <XAxis dataKey="name" tick={{ fontSize: 13, fontFamily: "'Noto Serif SC', serif", fill: 'var(--ink)' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 12, fill: 'var(--ash)' }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(74,55,40,0.05)' }} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(194, 156, 87, 0.05)' }} />
                   <Bar dataKey="数量" radius={[2,2,0,0]} maxBarSize={50}>
                     {stratTotal.map((entry, i) => (
                       <Cell key={i} fill={entry.fill} />
@@ -137,21 +140,22 @@ export default function Dashboard({ stats }) {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-xs text-ash mt-4 text-center tracking-widest-plus border-t border-ink/5 pt-4">
+            <p className="text-xs text-ash mt-4 text-center tracking-widest-plus border-t border-ink/5 pt-4 w-full">
               博弈型主导（{boyiCount} 例，占 {boyiPercent}%），印证了异类在人间生存之务实。
             </p>
           </div>
         </div>
 
-        <div>
+        {/* 主体性评分图 居中 */}
+        <div className="flex flex-col items-center flex-1">
           <SectionTitle>主体性评分图</SectionTitle>
-          <div className="bg-paper/40 border border-ink/10 p-6 shadow-sm">
-            <div className="h-[280px]">
+          <div className="bg-paper-dark/20 palace-border p-6 shadow-sm w-full flex flex-col items-center">
+            <div className="h-[280px] w-full max-w-sm">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={scoreDist} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
                   <XAxis dataKey="name" tick={{ fontSize: 13, fontFamily: "'Noto Serif SC', serif", fill: 'var(--ink)' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 12, fill: 'var(--ash)' }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(74,55,40,0.05)' }} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(194, 156, 87, 0.05)' }} />
                   <Bar dataKey="数量" radius={[2,2,0,0]} maxBarSize={40}>
                     {scoreDist.map((entry, i) => (
                       <Cell key={i} fill={entry.fill} />
@@ -160,53 +164,57 @@ export default function Dashboard({ stats }) {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex justify-center gap-6 mt-4 pt-4 border-t border-ink/5 text-xs text-ash tracking-widest">
-              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-[#6B5B4E]"></div> 灰烬</span>
-              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-[#7C8FA0]"></div> 银辉</span>
-              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-[#A07820]"></div> 金焰</span>
-              <span className="flex items-center gap-1"><div className="w-2 h-2 bg-[#8B1A1A]"></div> 朱砂</span>
+            <div className="flex justify-center gap-6 mt-4 pt-4 border-t border-ink/5 text-xs text-ash tracking-widest w-full">
+              <span className="flex items-center justify-center gap-1"><div className="w-2 h-2 bg-[#6B5B4E]"></div> 灰烬</span>
+              <span className="flex items-center justify-center gap-1"><div className="w-2 h-2 bg-[#7C8FA0]"></div> 银辉</span>
+              <span className="flex items-center justify-center gap-1"><div className="w-2 h-2 bg-[#A07820]"></div> 金焰</span>
+              <span className="flex items-center justify-center gap-1"><div className="w-2 h-2 bg-[#8B1A1A]"></div> 朱砂</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-        <div className="lg:col-span-1">
+      <div className="flex flex-col lg:flex-row gap-8 mb-16 w-full max-w-5xl justify-center">
+        {/* 终局走势 居中 */}
+        <div className="w-full lg:w-1/3 flex flex-col items-center">
           <SectionTitle>终局走势</SectionTitle>
-          <div className="bg-paper/40 border border-ink/10 p-6 h-[320px] shadow-sm flex items-center justify-center">
+          <div className="bg-paper-dark/20 palace-border p-6 h-[320px] w-full flex flex-col items-center justify-center">
             {outcomeData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={outcomeData} cx="50%" cy="50%" innerRadius={40} outerRadius={90}
-                    dataKey="value" nameKey="name" label={({ name }) => `${name}`}
-                    labelLine={false}
-                    stroke="var(--paper)" strokeWidth={2}
-                    style={{ fontSize: '11px', fontFamily: "'Noto Serif SC',serif", fill: 'var(--ink)' }}>
-                    {outcomeData.map((_, i) => (
-                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
+              <div className="w-full h-full max-w-[280px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={outcomeData} cx="50%" cy="50%" innerRadius={40} outerRadius={90}
+                      dataKey="value" nameKey="name" label={({ name }) => `${name}`}
+                      labelLine={false}
+                      stroke="var(--paper)" strokeWidth={2}
+                      style={{ fontSize: '11px', fontFamily: "'Noto Serif SC',serif", fill: 'var(--ink)' }}>
+                      {outcomeData.map((_, i) => (
+                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<CustomTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             ) : (
-              <span className="text-ash text-sm">暂无终局数据</span>
+              <span className="text-ash text-sm tracking-widest-plus text-center">暂无终局数据</span>
             )}
           </div>
         </div>
 
-        <div className="lg:col-span-2">
+        {/* 核心考语 完全居中 */}
+        <div className="w-full lg:w-2/3 flex flex-col items-center">
           <SectionTitle>核心考语</SectionTitle>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 h-[320px]">
-            <div className="p-8 palace-border bg-gradient-to-br from-paper to-[#8C0F16]/5 flex flex-col justify-center items-center text-center" style={{ borderColor: '#8B1A1A' }}>
-              <h4 className="text-xl font-serif mb-6 tracking-widest-plus text-[#8B1A1A]">聊斋变局最频</h4>
-              <p className="text-sm leading-loose text-ink-light tracking-widest text-justify max-w-[240px]">
+          <div className="flex flex-col sm:flex-row gap-6 h-auto sm:h-[320px] w-full">
+            <div className="flex-1 p-8 palace-border bg-gradient-to-br from-paper to-[#8C0F16]/5 flex flex-col justify-center items-center text-center">
+              <h4 className="text-xl font-serif mb-6 tracking-widest-plus text-[#8C0F16]" style={{ fontFamily: "'Ma Shan Zheng', serif" }}>聊斋变局最频</h4>
+              <p className="text-sm leading-loose text-ink-light tracking-widest text-center max-w-[240px]">
                 45.3% 的聊斋异类在叙事中改变了应对策略，远高于阅微（19.9%）与子不语（26.8%）。蒲松龄赋予了她们更幽深的叙事空间，使她们得以在绝境中完成从妥协到觉醒的心理蜕变。
               </p>
             </div>
-            <div className="p-8 palace-border bg-gradient-to-br from-paper to-[#8C0F16]/5 flex flex-col justify-center items-center text-center" style={{ borderColor: '#2C4A3E' }}>
-              <h4 className="text-xl font-serif mb-6 tracking-widest-plus text-[#2C4A3E]">子不语独见抗争</h4>
-              <p className="text-sm leading-loose text-ink-light tracking-widest text-justify max-w-[240px]">
+            <div className="flex-1 p-8 palace-border bg-gradient-to-br from-paper to-[#1E3D31]/5 flex flex-col justify-center items-center text-center">
+              <h4 className="text-xl font-serif mb-6 tracking-widest-plus text-[#1E3D31]" style={{ fontFamily: "'Ma Shan Zheng', serif" }}>子不语独见抗争</h4>
+              <p className="text-sm leading-loose text-ink-light tracking-widest text-center max-w-[240px]">
                 全样本中仅有的 8 例极端「抗争型」策略，竟悉数出自《子不语》。在袁枚笔下的市井江湖中，异类不再一味隐忍，她们敢于撕破脸皮，以暴烈之姿向礼教与天威拔剑。
               </p>
             </div>

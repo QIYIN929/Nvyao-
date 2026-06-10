@@ -120,18 +120,22 @@ export default function DataExplorer({ entries }) {
   );
 
   return (
-    <div className="animate-fade-up">
-      <div className="flex items-center gap-4 mb-8 mt-12">
-        <h2 className="text-2xl font-serif text-ink tracking-widest" style={{ fontFamily: "'Ma Shan Zheng', serif" }}>
-          原典案卷检索
-        </h2>
-        <div className="h-px flex-1 bg-gradient-to-r from-ink/20 to-transparent"></div>
+    <div className="animate-fade-up flex flex-col items-center w-full">
+      <div className="flex flex-col items-center justify-center gap-3 mb-10 mt-12 w-full max-w-sm">
+        <div className="flex items-center gap-4 w-full">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gold/40"></div>
+          <h2 className="text-2xl font-serif text-ink tracking-widest-plus text-center" style={{ fontFamily: "'Ma Shan Zheng', serif" }}>
+            原典案卷检索
+          </h2>
+          <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gold/40"></div>
+        </div>
+        <div className="w-12 h-[2px] bg-vermillion/40"></div>
       </div>
 
       {/* 筛选区 */}
-      <div className="palace-border bg-paper-dark/20 p-8 shadow-sm mb-12 space-y-6 flex flex-col items-center">
+      <div className="palace-border bg-paper-dark/20 p-8 shadow-sm mb-12 space-y-6 flex flex-col items-center w-full max-w-4xl">
         <div className="relative w-full max-w-2xl mb-2">
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ash" />
+          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gold" />
           <input
             value={query}
             onChange={e => { setQuery(e.target.value); setPage(0); }}
@@ -139,7 +143,7 @@ export default function DataExplorer({ entries }) {
             className="w-full pl-12 pr-10 py-3 border border-gold/40 text-sm focus:outline-none focus:border-vermillion placeholder-ash/50 bg-paper transition-colors shadow-inner text-center"
           />
           {query && (
-            <button onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-ash hover:text-ink">
+            <button onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-vermillion hover:text-ink">
               <X size={16} />
             </button>
           )}
@@ -176,43 +180,47 @@ export default function DataExplorer({ entries }) {
           <span className="text-xs text-ash tracking-widest">
             寻得 <strong className="text-vermillion text-base mx-1 font-serif">{filtered.length}</strong> 卷符合条件的记录
           </span>
-          <button onClick={resetFilters} className="text-xs text-ash hover:text-ink underline underline-offset-4 tracking-widest transition-colors">
+          <button onClick={resetFilters} className="text-xs text-gold hover:text-vermillion underline underline-offset-4 tracking-widest transition-colors">
             重置所有条件
           </button>
         </div>
       </div>
 
-      {/* 卷宗卡片流 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* 卷宗卡片流 (居中 Flex Wrap 布局) */}
+      <div className="flex flex-wrap justify-center gap-8 w-full max-w-6xl">
         {paginated.map(entry => {
           const id = `${entry['语料库']}-${entry['序号']}`;
-          return <EntryCard key={id} entry={entry} />;
+          return (
+            <div key={id} className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-sm">
+              <EntryCard entry={entry} />
+            </div>
+          );
         })}
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-24 border border-gold/20 bg-paper-dark/10 mt-8 palace-border">
-          <p className="text-ash tracking-widest">茫茫书海，未寻得相符卷宗。</p>
+        <div className="text-center py-24 border border-gold/20 bg-paper-dark/10 mt-8 palace-border w-full max-w-4xl">
+          <p className="text-gold tracking-widest-plus">茫茫书海，未寻得相符卷宗。</p>
         </div>
       )}
 
       {/* 分页 */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-8 mt-16">
+        <div className="flex justify-center items-center gap-8 mt-16 w-full">
           <button 
             disabled={page === 0} 
             onClick={() => setPage(p => p - 1)}
-            className="px-6 py-2 border border-ink/20 text-sm text-ink hover:bg-ink/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-serif tracking-widest"
+            className="px-6 py-2 border border-gold/40 text-sm text-ink hover:bg-gold/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-serif tracking-widest"
           >
             上一卷
           </button>
-          <span className="text-sm font-serif text-ash tracking-widest">
-            {page + 1} / {totalPages}
+          <span className="text-sm font-serif text-gold tracking-widest-plus">
+            第 {page + 1} / {totalPages} 卷
           </span>
           <button 
             disabled={page === totalPages - 1} 
             onClick={() => setPage(p => p + 1)}
-            className="px-6 py-2 border border-ink/20 text-sm text-ink hover:bg-ink/5 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-serif tracking-widest"
+            className="px-6 py-2 border border-gold/40 text-sm text-ink hover:bg-gold/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-serif tracking-widest"
           >
             下一卷
           </button>
