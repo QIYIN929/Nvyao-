@@ -12,32 +12,42 @@ export const PROLOGUE_TEXT = [
   '只在扉页，留下四个字：',
 ];
 
-export const TYPES = {
+export const TYPE_PANELS = {
   狐: {
     key: '狐', label: '狐', score: 3,
-    subtitle: '魅影绰约，然心窍玲珑',
-    desc: '以幻化之术游走人间，深谙世情，长于权衡。她的眼眸里藏着千年的算计，也藏着真实的情欲。',
-    color: '#A07820'
+    verse: '狡而不邪，媚而有灵。通人性，善幻化。',
+    bg: 'linear-gradient(180deg, #E8DCC4 0%, #D4C4A0 45%, #C8B890 100%)',
+    accent: '#8A7340',
+    color: '#8A7340',
+    silhouette: 'fox',
   },
   鬼: {
     key: '鬼', label: '鬼', score: 1,
-    subtitle: '执念不消，化形留人间',
-    desc: '死亡不是终点，而是另一种存在的开端。她以执念为骨，以记忆为肉，游荡在阴阳之间，不肯散去。',
-    color: '#7C8FA0'
+    verse: '怨而有情，执念难消。隐于暗，摄人心。',
+    bg: 'linear-gradient(180deg, #E8D0D0 0%, #D4A8A8 45%, #C89898 100%)',
+    accent: '#8A5050',
+    color: '#8A5050',
+    silhouette: 'ghost',
   },
   精: {
     key: '精', label: '精', score: 1,
-    subtitle: '草木感灵，初涉尘世',
-    desc: '山石草木，经年累月，终于在某个清晨睁开了眼。人间于她是陌生的迷宫，危险而令人着迷。',
-    color: '#2C4A3E'
+    verse: '生于天地，灵慧通真。草木石，皆有灵。',
+    bg: 'linear-gradient(180deg, #D8E4D0 0%, #B8C8B0 45%, #A0B098 100%)',
+    accent: '#4A6048',
+    color: '#4A6048',
+    silhouette: 'spirit',
   },
   仙: {
     key: '仙', label: '仙', score: 3,
-    subtitle: '谪落凡胎，天规在颈',
-    desc: '天庭的诫令刻在她的魂魄深处，人间的烟火却也点燃了她的眼睛。规则与欲望之间，她必须做出选择。',
-    color: '#8B1A1A'
+    verse: '超凡脱俗，道通无尘。修大道，参天机。',
+    bg: 'linear-gradient(180deg, #D0DCE8 0%, #A8B8C8 45%, #90A4B8 100%)',
+    accent: '#4A6078',
+    color: '#4A6078',
+    silhouette: 'immortal',
   },
 };
+
+export const TYPES = TYPE_PANELS;
 
 export const ENCOUNTERS = [
   {

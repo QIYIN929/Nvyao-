@@ -100,13 +100,22 @@ function App() {
   };
 
   const handleEnterResearch = () => setPhase('research');
+  const handleBackHome = () => setPhase('prologue');
 
-  if (phase === 'research') return <ResearchPage />;
+  if (phase === 'research') return <ResearchPage onBackHome={handleBackHome} />;
 
   return (
     <>
-      {phase === 'prologue' && <Prologue onEnter={handleEnterGame} />}
-      {phase === 'vol1' && <Vol1Type onSelect={handleSelectType} />}
+      {phase === 'prologue' && (
+        <Prologue onEnter={handleEnterGame} onEnterResearch={handleEnterResearch} />
+      )}
+      {phase === 'vol1' && (
+        <Vol1Type
+          onSelect={handleSelectType}
+          onEnterResearch={handleEnterResearch}
+          onBackHome={handleBackHome}
+        />
+      )}
       {phase === 'vol2' && gameData.typeKey && (
         <Vol2Encounter typeKey={gameData.typeKey} onSelect={handleSelectEncounter} />
       )}
