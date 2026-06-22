@@ -163,6 +163,18 @@ body {
 .recharts-text { font-family: 'Noto Serif SC', serif !important; font-size: 12px !important; }
 .recharts-tooltip-cursor { fill: rgba(194, 156, 87, 0.08) !important; }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* =========================================
    首页 Hero 与导航栏
 ========================================= */
@@ -175,6 +187,24 @@ body {
   background: linear-gradient(180deg, rgba(28, 24, 20, 0.92) 0%, rgba(34, 30, 26, 0.88) 100%);
   border-bottom: 1px solid rgba(194, 156, 87, 0.25);
   backdrop-filter: blur(8px);
+}
+
+.site-nav--overlay {
+  background: transparent;
+  border-bottom: none;
+  backdrop-filter: none;
+}
+
+.site-nav--overlay .nav-link {
+  min-width: 148px;
+  min-height: 40px;
+  color: transparent;
+}
+
+.site-nav--overlay .nav-link:hover {
+  color: transparent;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
 }
 
 .site-nav-inner {
@@ -257,15 +287,14 @@ body {
 .hero-page-bg-image {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.hero-page--artwork .hero-page-bg-image {
   background-color: #E8E1D5;
-  background-image:
-    radial-gradient(ellipse 55% 45% at 72% 38%, rgba(255, 220, 230, 0.35) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 35% at 18% 78%, rgba(220, 180, 190, 0.28) 0%, transparent 65%),
-    linear-gradient(180deg, rgba(210, 200, 185, 0.5) 0%, rgba(232, 225, 213, 0.2) 45%, rgba(200, 190, 175, 0.35) 100%),
-    linear-gradient(180deg, rgba(232, 225, 213, 0.15) 0%, rgba(232, 225, 213, 0.55) 100%),
-    url('/images/home-hero.jpg');
-  background-size: cover, cover, cover, cover, cover;
-  background-position: center, center, center, center, center 20%;
 }
 
 .hero-page-bg-vignette {
@@ -274,6 +303,35 @@ body {
   background:
     radial-gradient(ellipse 80% 60% at 50% 45%, transparent 30%, rgba(60, 45, 30, 0.18) 100%),
     linear-gradient(180deg, rgba(28, 24, 20, 0.35) 0%, transparent 18%, transparent 75%, rgba(28, 24, 20, 0.25) 100%);
+  pointer-events: none;
+}
+
+.hero-page--artwork .hero-page-bg-vignette {
+  display: none;
+}
+
+.hero-hit-start {
+  position: absolute;
+  left: 50%;
+  top: clamp(52%, 58vh, 62%);
+  transform: translateX(-50%);
+  width: clamp(160px, 18vw, 220px);
+  height: clamp(40px, 5vh, 52px);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.hero-hit-start:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+.hero-hit-start:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
 }
 
 .hero-page-main {
@@ -375,6 +433,42 @@ body {
   display: flex;
   flex-direction: column;
   background: #E8E1D5;
+}
+
+.select-page--artwork {
+  background: #E8E1D5;
+}
+
+.select-page--artwork .select-page-main {
+  margin-top: 0;
+  min-height: 100vh;
+}
+
+.type-panel--artwork {
+  padding: 0;
+  background-color: #E8E1D5;
+  border-right: none;
+}
+
+.type-panel--artwork.type-panel-hover {
+  filter: brightness(1.06);
+}
+
+.type-panel--artwork.type-panel-selected {
+  box-shadow: inset 0 0 0 3px rgba(194, 156, 87, 0.65);
+  filter: brightness(1.08);
+}
+
+.select-page--artwork .select-back-link {
+  background: rgba(28, 24, 20, 0.55);
+  color: rgba(249, 246, 240, 0.92);
+  border-color: rgba(194, 156, 87, 0.5);
+  backdrop-filter: blur(6px);
+}
+
+.select-page--artwork .select-back-link:hover {
+  background: rgba(28, 24, 20, 0.72);
+  color: #fff;
 }
 
 .select-page-main {
@@ -536,6 +630,26 @@ body {
     grid-template-rows: repeat(2, 1fr);
   }
 
+  .select-page--artwork .type-panel[data-panel-index="0"] {
+    background-size: 200% 210% !important;
+    background-position: 0% 8% !important;
+  }
+
+  .select-page--artwork .type-panel[data-panel-index="1"] {
+    background-size: 200% 210% !important;
+    background-position: 100% 8% !important;
+  }
+
+  .select-page--artwork .type-panel[data-panel-index="2"] {
+    background-size: 200% 210% !important;
+    background-position: 0% 92% !important;
+  }
+
+  .select-page--artwork .type-panel[data-panel-index="3"] {
+    background-size: 200% 210% !important;
+    background-position: 100% 92% !important;
+  }
+
   .type-panel:nth-child(2) {
     border-right: none;
   }
@@ -550,6 +664,26 @@ body {
   .select-page-main {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, minmax(220px, 1fr));
+  }
+
+  .select-page--artwork .type-panel[data-panel-index="0"] {
+    background-size: 400% 420% !important;
+    background-position: 0% 8% !important;
+  }
+
+  .select-page--artwork .type-panel[data-panel-index="1"] {
+    background-size: 400% 420% !important;
+    background-position: 33.33% 8% !important;
+  }
+
+  .select-page--artwork .type-panel[data-panel-index="2"] {
+    background-size: 400% 420% !important;
+    background-position: 66.66% 8% !important;
+  }
+
+  .select-page--artwork .type-panel[data-panel-index="3"] {
+    background-size: 400% 420% !important;
+    background-position: 100% 8% !important;
   }
 
   .type-panel {

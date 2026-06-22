@@ -10,20 +10,21 @@ const ORNATE_SVG = (
   </svg>
 );
 
-export default function TopNav({ active = 'home', onStartSelect, onDataAnalysis }) {
+export default function TopNav({ active = 'home', onStartSelect, onDataAnalysis, overlay = false }) {
   return (
-    <header className="site-nav">
+    <header className={`site-nav${overlay ? ' site-nav--overlay' : ''}`}>
       <div className="site-nav-inner">
         <button
           type="button"
           className={`nav-link ${active === 'select' ? 'nav-link-active' : ''}`}
           onClick={onStartSelect}
+          aria-label="开始选择"
         >
-          {ORNATE_SVG}
-          <span>开始选择</span>
+          {!overlay && ORNATE_SVG}
+          <span className={overlay ? 'sr-only' : undefined}>开始选择</span>
         </button>
 
-        <div className="nav-diamond" aria-hidden="true">
+        <div className={`nav-diamond${overlay ? ' sr-only' : ''}`} aria-hidden="true">
           <svg viewBox="0 0 24 24" width="14" height="14">
             <path d="M12 2 L22 12 L12 22 L2 12 Z" fill="none" stroke="currentColor" strokeWidth="1" />
           </svg>
@@ -33,9 +34,10 @@ export default function TopNav({ active = 'home', onStartSelect, onDataAnalysis 
           type="button"
           className={`nav-link ${active === 'research' ? 'nav-link-active' : ''}`}
           onClick={onDataAnalysis}
+          aria-label="数据分析"
         >
-          {ORNATE_SVG}
-          <span>数据分析</span>
+          {!overlay && ORNATE_SVG}
+          <span className={overlay ? 'sr-only' : undefined}>数据分析</span>
         </button>
       </div>
     </header>

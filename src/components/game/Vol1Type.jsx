@@ -3,14 +3,7 @@ import { TYPE_PANELS } from '../../data/gameContent';
 import TopNav from '../layout/TopNav';
 
 const TYPE_ORDER = ['狐', '鬼', '精', '仙'];
-
-function PanelSilhouette({ type }) {
-  return (
-    <div className={`type-silhouette type-silhouette-${type}`} aria-hidden="true">
-      <div className="type-silhouette-figure" />
-    </div>
-  );
-}
+const PANEL_BG_POS = ['0% 9%', '33.33% 9%', '66.66% 9%', '100% 9%'];
 
 export default function Vol1Type({ onSelect, onEnterResearch, onBackHome }) {
   const [hovered, setHovered] = useState(null);
@@ -22,15 +15,16 @@ export default function Vol1Type({ onSelect, onEnterResearch, onBackHome }) {
   }
 
   return (
-    <div className="select-page">
+    <div className="select-page select-page--artwork">
       <TopNav
+        overlay
         active="select"
         onStartSelect={() => {}}
         onDataAnalysis={onEnterResearch}
       />
 
       <main className="select-page-main">
-        {TYPE_ORDER.map((key) => {
+        {TYPE_ORDER.map((key, index) => {
           const panel = TYPE_PANELS[key];
           const isSelected = selected === key;
           const isFading = selected && selected !== key;
@@ -40,29 +34,22 @@ export default function Vol1Type({ onSelect, onEnterResearch, onBackHome }) {
             <button
               key={key}
               type="button"
-              className={`type-panel ${isHovered ? 'type-panel-hover' : ''} ${isSelected ? 'type-panel-selected' : ''}`}
+              className={`type-panel type-panel--artwork ${isHovered ? 'type-panel-hover' : ''} ${isSelected ? 'type-panel-selected' : ''}`}
               style={{
-                background: panel.bg,
+                backgroundImage: "url('/images/select-panels.png')",
+                backgroundSize: '400% 112%',
+                backgroundPosition: PANEL_BG_POS[index],
+                backgroundRepeat: 'no-repeat',
                 opacity: isFading ? 0.35 : 1,
               }}
               onMouseEnter={() => !selected && setHovered(key)}
               onMouseLeave={() => setHovered(null)}
               onClick={() => !selected && handleSelect(key)}
               disabled={!!selected}
+              aria-label={`选择${panel.label}：${panel.verse}`}
+              data-panel-index={index}
             >
-              <div className="type-panel-top">
-                <span className="type-panel-char" style={{ color: panel.accent }}>
-                  {panel.label}
-                </span>
-              </div>
-
-              <p className="type-panel-verse vertical-text" style={{ color: panel.accent }}>
-                {panel.verse}
-              </p>
-
-              <PanelSilhouette type={panel.silhouette} />
-
-              <div className="type-panel-mist" aria-hidden="true" />
+              <span className="sr-only">{panel.label}</span>
             </button>
           );
         })}
