@@ -17,7 +17,6 @@ export default function Vol1Type({ onSelect, onEnterResearch, onBackHome }) {
   return (
     <div className="select-page select-page--artwork">
       <TopNav
-        overlay
         active="select"
         onStartSelect={() => {}}
         onDataAnalysis={onEnterResearch}

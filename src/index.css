@@ -282,6 +282,7 @@ body {
   position: absolute;
   inset: 0;
   z-index: 0;
+  pointer-events: none;
 }
 
 .hero-page-bg-image {
@@ -291,6 +292,8 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center center;
+  pointer-events: none;
+  user-select: none;
 }
 
 .hero-page--artwork .hero-page-bg-image {
@@ -311,27 +314,50 @@ body {
 }
 
 .hero-hit-start {
-  position: absolute;
-  left: 50%;
-  top: clamp(52%, 58vh, 62%);
-  transform: translateX(-50%);
-  width: clamp(160px, 18vw, 220px);
-  height: clamp(40px, 5vh, 52px);
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  z-index: 10;
+  display: none;
 }
 
-.hero-hit-start:hover {
-  background: rgba(255, 255, 255, 0.08);
+.hero-page-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: clamp(10%, 16vh, 20%);
+  display: flex;
+  justify-content: center;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.hero-page-overlay > * {
+  pointer-events: auto;
+}
+
+.hero-hit-area {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 56px;
+  bottom: 0;
+  z-index: 5;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.hero-hit-area:focus-visible {
+  outline: none;
+}
+
+.hero-page--artwork .ornate-btn {
+  background: rgba(249, 246, 240, 0.55);
+  backdrop-filter: blur(6px);
   border-radius: 2px;
 }
 
-.hero-hit-start:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
+.hero-page--artwork .ornate-btn:hover {
+  background: rgba(249, 246, 240, 0.75);
 }
 
 .hero-page-main {
@@ -440,14 +466,19 @@ body {
 }
 
 .select-page--artwork .select-page-main {
-  margin-top: 0;
-  min-height: 100vh;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+  position: relative;
+  z-index: 1;
 }
 
 .type-panel--artwork {
   padding: 0;
   background-color: #E8E1D5;
   border-right: none;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
 }
 
 .type-panel--artwork.type-panel-hover {
