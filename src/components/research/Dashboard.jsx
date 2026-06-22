@@ -23,7 +23,7 @@ function SectionTitle({ children }) {
         </h2>
         <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gold/40"></div>
       </div>
-      <div className="w-12 h-[2px] bg-vermillion/40"></div>
+      <div className="w-12 h-[2px] bg-gold/40"></div>
     </div>
   );
 }
@@ -205,9 +205,9 @@ export default function Dashboard({ stats }) {
         {/* 核心考语 完全居中 */}
         <div className="w-full lg:w-2/3 flex flex-col items-center">
           <SectionTitle>核心考语</SectionTitle>
-          <div className="flex flex-col sm:flex-row gap-6 h-auto sm:h-[320px] w-full">
-            <div className="flex-1 p-8 palace-border bg-gradient-to-br from-paper to-[#8C0F16]/5 flex flex-col justify-center items-center text-center">
-              <h4 className="text-xl font-serif mb-6 tracking-widest-plus text-[#8C0F16]" style={{ fontFamily: "'Ma Shan Zheng', serif" }}>聊斋变局最频</h4>
+          <div className="flex flex-col sm:flex-row gap-6 h-auto sm:h-[320px] w-full justify-center">
+            <div className="flex-1 p-8 palace-border bg-gradient-to-br from-paper to-gold/5 flex flex-col justify-center items-center text-center">
+              <h4 className="text-xl font-serif mb-6 tracking-widest-plus text-ink" style={{ fontFamily: "'Ma Shan Zheng', serif" }}>聊斋变局最频</h4>
               <p className="text-sm leading-loose text-ink-light tracking-widest text-center max-w-[240px]">
                 45.3% 的聊斋异类在叙事中改变了应对策略，远高于阅微（19.9%）与子不语（26.8%）。蒲松龄赋予了她们更幽深的叙事空间，使她们得以在绝境中完成从妥协到觉醒的心理蜕变。
               </p>

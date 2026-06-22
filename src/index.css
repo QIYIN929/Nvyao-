@@ -163,6 +163,18 @@ body {
 .recharts-text { font-family: 'Noto Serif SC', serif !important; font-size: 12px !important; }
 .recharts-tooltip-cursor { fill: rgba(194, 156, 87, 0.08) !important; }
 
+.research-page {
+  position: relative;
+}
+
+.research-header {
+  box-shadow: 0 1px 0 rgba(194, 156, 87, 0.12);
+}
+
+.research-hero {
+  position: relative;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

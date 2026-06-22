@@ -10,7 +10,7 @@ function ScoreMeter({ score }) {
   }, [score]);
 
   return (
-    <div className="flex items-center gap-2 mt-4">
+    <div className="flex items-center justify-center gap-2 mt-4">
       {Array.from({ length: 9 }).map((_, i) => (
         <div key={i} className="transition-all duration-200"
           style={{
@@ -46,15 +46,15 @@ export default function Vol7Result({ typeKey, encKey, finalStratKey, transferred
   const clampedScore = Math.max(0, Math.min(9, finalScore));
 
   return (
-    <div className="min-h-screen paper-bg flex flex-col items-center justify-center px-4 py-12 relative">
-      <div className="max-w-2xl w-full relative z-10">
-        <div className="text-center mb-8">
-          <p className="text-xs tracking-widest mb-1" style={{ color: 'var(--ash)' }}>卷 七</p>
+    <div className="min-h-screen paper-bg flex flex-col items-center justify-center px-4 py-12">
+      <div className="max-w-2xl w-full mx-auto text-center">
+        <div className="mb-8">
+          <p className="text-xs tracking-widest mb-1 text-ash">卷 七</p>
           <h2 style={{ fontFamily: "'Ma Shan Zheng', serif", fontSize: '2rem', color: 'var(--ink)' }}>终局</h2>
         </div>
 
         {phase >= 1 && (
-          <div className="mb-6 p-4 border animate-ink-fade" style={{ borderColor: 'rgba(74,55,40,0.2)', background: 'rgba(245,237,214,0.6)' }}>
+          <div className="mb-6 p-4 border animate-ink-fade mx-auto max-w-xl" style={{ borderColor: 'rgba(74,55,40,0.2)', background: 'rgba(245,237,214,0.6)' }}>
             <div className="flex flex-wrap gap-2 text-xs justify-center items-center" style={{ letterSpacing: '0.08em' }}>
               <span className="px-2 py-1 rounded" style={{ background: `${type.color}20`, color: type.color }}>{type.label}族</span>
               <span style={{ color: 'var(--ash)' }}>遇</span>
@@ -72,36 +72,44 @@ export default function Vol7Result({ typeKey, encKey, finalStratKey, transferred
               {seal.iconChar}
             </div>
             <p className="font-medium mb-1" style={{ color: seal.color, letterSpacing: '0.2em', fontSize: '1.1rem' }}>{seal.name}</p>
-            <p className="text-xs text-center" style={{ color: 'var(--ash)', maxWidth: '280px', lineHeight: 1.8 }}>{seal.desc}</p>
+            <p className="text-xs text-center max-w-xs mx-auto" style={{ color: 'var(--ash)', lineHeight: 1.8 }}>{seal.desc}</p>
             <ScoreMeter score={clampedScore} />
           </div>
         )}
 
         {phase >= 3 && (
-          <div className="mb-6 p-5 border-l-2 animate-fade-up" style={{ borderColor: seal.color, background: 'rgba(245,237,214,0.5)' }}>
-            <p className="text-xs mb-3 flex items-center gap-2" style={{ color: 'var(--ash)' }}><span>📖</span> 学者按语</p>
-            <p className="text-sm leading-8" style={{ color: 'var(--ink-light)' }}>
+          <div className="mb-6 p-5 border animate-fade-up mx-auto max-w-xl text-center" style={{ borderColor: 'rgba(194, 156, 87, 0.35)', background: 'rgba(245,237,214,0.5)' }}>
+            <p className="text-xs mb-3 flex items-center justify-center gap-2 text-ash">
+              <span>📖</span> 学者按语
+            </p>
+            <p className="text-sm leading-8 text-ink-light">
               此卷记载，<span style={{ color: type.color }}>【{type.label}】</span>族遇【{enc?.label || '深山'}】，
-              最终以<span style={{ color: 'var(--vermillion)' }}>【{finalStratKey}】</span>之姿迎来了「{outcomeStr}」。
+              最终以<span style={{ color: 'var(--ink)' }}>【{finalStratKey}】</span>之姿迎来了「{outcomeStr}」。
               其灵魄终印为<span style={{ color: seal.color }}>「{seal.name}」</span>（主体性{clampedScore}/9）。
             </p>
             {pathData && (
-              <div className="mt-4 pt-3 border-t text-xs" style={{ borderColor: 'rgba(74,55,40,0.15)', color: 'var(--ash)', lineHeight: 2 }}>
-                <p>· 志怪三书中，同类路径（{type.label}·{finalStratKey}{transferred ? '·已转换' : '·未转换'}）共见于 <strong style={{ color: 'var(--ink)' }}>{pathData.count}</strong> 例。</p>
+              <div className="mt-4 pt-3 border-t text-xs text-center text-ash leading-8" style={{ borderColor: 'rgba(74,55,40,0.15)' }}>
+                <p>· 志怪三书中，同类路径（{type.label}·{finalStratKey}{transferred ? '·已转换' : '·未转换'}）共见于 <strong className="text-ink">{pathData.count}</strong> 例。</p>
                 <p>· 典型篇目：{pathData.examples?.map(e => `《${e.title}》`).join('、')}</p>
               </div>
             )}
-            <p className="mt-4 text-sm italic text-center" style={{ color: 'var(--ink-light)', lineHeight: 2 }}>「{seal.metaphor}」</p>
+            <p className="mt-4 text-sm italic text-ink-light leading-8">「{seal.metaphor}」</p>
           </div>
         )}
 
         {phase >= 4 && (
-          <div className="text-center animate-fade-up mt-8">
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button onClick={onEnterResearch} className="px-8 py-3 text-sm transition-all" style={{ background: 'var(--vermillion)', color: 'var(--paper)' }}>
+          <div className="animate-fade-up mt-8">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+              <button
+                onClick={onEnterResearch}
+                className="px-8 py-3 text-sm transition-all border border-gold/50 bg-gold/10 text-ink hover:bg-gold/20 tracking-widest"
+              >
                 展开完整研究 →
               </button>
-              <button onClick={() => window.location.reload()} className="px-6 py-3 text-sm transition-all" style={{ background: 'transparent', color: 'var(--ash)', border: '1px solid rgba(74,55,40,0.3)' }}>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-3 text-sm transition-all bg-transparent text-ash border border-ink/20 hover:border-ink/40 tracking-widest"
+              >
                 重读此卷
               </button>
             </div>

@@ -166,9 +166,9 @@ export default function DataExplorer({ entries }) {
       onClick={() => { setter(value); setPage(0); }}
       className="text-xs px-4 py-1.5 border transition-all duration-150"
       style={{
-        borderColor: current === value ? (color || 'var(--vermillion)') : 'rgba(74,55,40,0.2)',
-        background: current === value ? `${color || '#8B1A1A'}10` : 'transparent',
-        color: current === value ? (color || 'var(--vermillion)') : 'var(--ash)',
+        borderColor: current === value ? (color || 'var(--gold)') : 'rgba(74,55,40,0.2)',
+        background: current === value ? `${color || '#C29C57'}10` : 'transparent',
+        color: current === value ? (color || 'var(--ink)') : 'var(--ash)',
         letterSpacing: '0.06em',
       }}
     >{children}</button>
@@ -184,7 +184,7 @@ export default function DataExplorer({ entries }) {
           </h2>
           <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gold/40"></div>
         </div>
-        <div className="w-12 h-[2px] bg-vermillion/40"></div>
+        <div className="w-12 h-[2px] bg-gold/40"></div>
       </div>
 
       {/* 筛选区 */}
@@ -195,10 +195,10 @@ export default function DataExplorer({ entries }) {
             value={query}
             onChange={e => { setQuery(e.target.value); setPage(0); }}
             placeholder="搜索篇名、结局关键字或学者按语……"
-            className="w-full pl-12 pr-10 py-3 border border-gold/40 text-sm focus:outline-none focus:border-vermillion placeholder-ash/50 bg-paper transition-colors shadow-inner text-center"
+            className="w-full pl-12 pr-10 py-3 border border-gold/40 text-sm focus:outline-none focus:border-gold placeholder-ash/50 bg-paper transition-colors shadow-inner text-center"
           />
           {query && (
-            <button onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-vermillion hover:text-ink">
+            <button onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-ash hover:text-ink">
               <X size={16} />
             </button>
           )}
@@ -233,9 +233,9 @@ export default function DataExplorer({ entries }) {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6 mt-4 border-t border-gold/20 w-full max-w-2xl">
           <span className="text-xs text-ash tracking-widest">
-            寻得 <strong className="text-vermillion text-base mx-1 font-serif">{filtered.length}</strong> 卷符合条件的记录
+            寻得 <strong className="text-ink text-base mx-1 font-serif">{filtered.length}</strong> 卷符合条件的记录
           </span>
-          <button onClick={resetFilters} className="text-xs text-gold hover:text-vermillion underline underline-offset-4 tracking-widest transition-colors">
+          <button onClick={resetFilters} className="text-xs text-gold hover:text-ink underline underline-offset-4 tracking-widest transition-colors">
             重置所有条件
           </button>
         </div>
