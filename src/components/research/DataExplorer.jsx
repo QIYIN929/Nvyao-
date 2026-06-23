@@ -1,6 +1,7 @@
-﻿import { useState, useMemo } from 'react';
+﻿import { useState, useMemo, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogClose } from '../ui/dialog';
+import EntryCard from './EntryCard';
+import { entryInSealTier } from '../../lib/researchUtils';
 
 const CORPUS_COLOR = {
   '聊斋志异': '#8B1A1A',
@@ -13,157 +14,65 @@ const STRAT_COLORS = {
   抗争型: '#2C4A3E', 非自主: '#7C8FA0',
 };
 
-function getSealByScore(score) {
-  const s = Math.max(0, Math.min(9, parseInt(score) || 0));
-  if (s <= 2) return { color: '#6B5B4E', name: '灰烬' };
-  if (s <= 5) return { color: '#7C8FA0', name: '银辉' };
-  if (s <= 7) return { color: '#A07820', name: '金焰' };
-  return { color: '#8B1A1A', name: '朱砂' };
-}
+const SEAL_OPTIONS = ['全部', '灰烬', '银辉', '金焰', '朱砂'];
+const TRANSFER_OPTIONS = ['全部', '是', '否'];
 
-function EntryCard({ entry }) {
-  const corpusColor = CORPUS_COLOR[entry['语料库']] || '#6B5B4E';
-  const stratKey = entry['_策略简称'] || '';
-  const score = entry['_主体性'] || 0;
-  const seal = getSealByScore(score);
-  const title = String(entry['篇名'] || '').replace(/子不语卷[^ ]*-/,'').replace(/聊斋志异-/,'').replace(/阅微草堂笔记-/,'');
-  const hasTrans = entry['策略转换'] === '是';
-  
-  // Format the full text details for the dialog
-  const details = entry['备注'] || entry['结局简述'] || '暂无详细记载。';
+const DEFAULT_FILTERS = {
+  corpus: '全部',
+  strat: '全部',
+  type: '全部',
+  seal: '全部',
+  transfer: '全部',
+};
 
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <div className="group relative bg-paper/40 border border-ink/10 p-5 hover:border-ink/30 transition-all shadow-sm hover:shadow-md flex flex-col h-full overflow-hidden cursor-pointer text-left w-full hover:-translate-y-1">
-          <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: corpusColor }}></div>
-          <div className="absolute -bottom-4 -right-4 w-24 h-24 flex items-center justify-center pointer-events-none opacity-[0.03] group-hover:opacity-[0.08] transition-opacity"
-            style={{ color: seal.color, fontFamily: "'Ma Shan Zheng', serif", fontSize: '6rem' }}>
-            {seal.name.charAt(0)}
-          </div>
-          
-          <div className="mb-4 flex items-center gap-2">
-            <span className="text-xs px-2 py-0.5 border" style={{ borderColor: `${corpusColor}40`, color: corpusColor, background: `${corpusColor}10` }}>
-              {entry['语料库']}
-            </span>
-            <span className="text-xs px-2 py-0.5 border border-ink/10 text-ash bg-ink/5">
-              {entry['异类类型'] || '未知'}
-            </span>
-          </div>
-          
-          <h4 className="text-xl font-serif text-ink mb-4 group-hover:text-vermillion transition-colors flex items-center justify-between">
-            <span>《{title}》</span>
-            <span className="text-sm font-sans px-2 py-1 bg-paper border border-ink/10 shadow-sm" style={{ color: seal.color }}>
-              主体性 {score}
-            </span>
-          </h4>
-          
-          <div className="flex-1 space-y-3 text-sm">
-            <div className="flex justify-between items-center border-b border-ink/5 pb-2">
-              <span className="text-ash tracking-widest">起手策略</span>
-              <span style={{ color: STRAT_COLORS[stratKey] || 'var(--ink)' }}>{stratKey}</span>
-            </div>
-            
-            {hasTrans && entry['最终结局_大类'] && (
-              <div className="flex justify-between items-center border-b border-ink/5 pb-2">
-                <span className="text-vermillion tracking-widest">发生变局</span>
-                <span className="text-vermillion text-xs">是</span>
-              </div>
-            )}
-
-            <div className="pt-2 flex-1">
-              <span className="text-xs text-ash tracking-widest block mb-1">终局考语</span>
-              <span className="text-ink-light text-xs leading-relaxed line-clamp-3" title={details}>
-                {details}
-              </span>
-            </div>
-          </div>
-        </div>
-      </DialogTrigger>
-      
-      <DialogContent className="max-w-2xl min-h-[500px] flex flex-col sm:flex-row gap-8 overflow-hidden bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3CfeColorMatrix type=%22saturate%22 values=%220%22/%3E%3C/filter%3E%3Crect width=%22400%22 height=%22400%22 filter=%22url(%23noise)%22 opacity=%220.04%22/%3E%3C/svg%3E')] bg-[#F9F6F0]">
-        
-        {/* 左侧信息区 (Modern) */}
-        <div className="flex-1 flex flex-col border-r border-[#C29C57]/30 pr-6">
-          <div className="mb-6">
-            <span className="text-xs px-2 py-1 border" style={{ borderColor: `${corpusColor}40`, color: corpusColor, background: `${corpusColor}10` }}>
-              {entry['语料库']}
-            </span>
-          </div>
-          <DialogTitle>《{title}》</DialogTitle>
-          <div className="mt-6 space-y-4">
-            <div className="flex justify-between border-b border-[#221814]/10 pb-2">
-              <span className="text-sm text-[#8C7B6D] tracking-widest">异类本相</span>
-              <span className="text-sm text-[#221814]">{entry['异类类型'] || '未知'}</span>
-            </div>
-            <div className="flex justify-between border-b border-[#221814]/10 pb-2">
-              <span className="text-sm text-[#8C7B6D] tracking-widest">初始策略</span>
-              <span className="text-sm" style={{ color: STRAT_COLORS[stratKey] }}>{stratKey}</span>
-            </div>
-            <div className="flex justify-between border-b border-[#221814]/10 pb-2">
-              <span className="text-sm text-[#8C7B6D] tracking-widest">结局大类</span>
-              <span className="text-sm text-[#221814]">{entry['最终结局_大类'] || '未知'}</span>
-            </div>
-            <div className="flex justify-between border-b border-[#221814]/10 pb-2">
-              <span className="text-sm text-[#8C7B6D] tracking-widest">主体性评分</span>
-              <span className="text-sm font-bold" style={{ color: seal.color }}>{score} ({seal.name})</span>
-            </div>
-          </div>
-          <DialogDescription className="mt-auto pt-6 text-xs text-[#8C7B6D]">
-            编号：{entry['序号']}
-          </DialogDescription>
-        </div>
-
-        {/* 右侧：卷轴竖排文字区 (Ancient) */}
-        <div className="flex-1 relative flex justify-end">
-          <div className="absolute top-0 bottom-0 right-0 w-8 border-l border-[#8C0F16]/20 flex items-center justify-center">
-             <span className="text-[#8C0F16]/40 vertical-text text-sm">志怪案卷提取</span>
-          </div>
-          <div className="pr-12 h-[400px] overflow-x-auto overflow-y-hidden vertical-text text-left text-[#5C4D43] leading-loose tracking-[0.3em] text-[15px] p-4 custom-scrollbar">
-            {details.split('。').map((sentence, idx) => (
-              sentence.trim() ? <p key={idx} className="mb-2">{sentence.trim()}。</p> : null
-            ))}
-          </div>
-        </div>
-        
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-export default function DataExplorer({ entries }) {
+export default function DataExplorer({ entries, initialFilters }) {
   const [query, setQuery] = useState('');
-  const [filterCorpus, setFilterCorpus] = useState('全部');
-  const [filterStrat, setFilterStrat] = useState('全部');
-  const [filterType, setFilterType] = useState('全部');
+  const [filters, setFilters] = useState(initialFilters || DEFAULT_FILTERS);
   const [page, setPage] = useState(0);
-  const PAGE_SIZE = 12; // 3 columns * 4 rows
+  const PAGE_SIZE = 12;
+
+  useEffect(() => {
+    if (initialFilters) {
+      setFilters({ ...DEFAULT_FILTERS, ...initialFilters });
+      setQuery('');
+      setPage(0);
+    }
+  }, [initialFilters]);
 
   const filtered = useMemo(() => {
     return (entries || []).filter(e => {
-      if (filterCorpus !== '全部' && e['语料库'] !== filterCorpus) return false;
-      if (filterStrat !== '全部' && e['_策略简称'] !== filterStrat) return false;
-      if (filterType !== '全部' && !String(e['_异类简称']).startsWith(filterType)) return false;
+      if (filters.corpus !== '全部' && e['语料库'] !== filters.corpus) return false;
+      if (filters.strat !== '全部' && e['_策略简称'] !== filters.strat) return false;
+      if (filters.type !== '全部' && !String(e['_异类简称']).startsWith(filters.type)) return false;
+      if (filters.transfer !== '全部' && e['策略转换'] !== filters.transfer) return false;
+      if (!entryInSealTier(e, filters.seal)) return false;
       if (query) {
         const q = query.toLowerCase();
-        const text = `${e['篇名']}${e['异类类型']}${e['备注']}${e['理论标签']}`.toLowerCase();
+        const text = `${e['篇名']}${e['异类类型']}${e['初始处境']}${e['核心困境']}${e['备注']}${e['理论标签']}`.toLowerCase();
         if (!text.includes(q)) return false;
       }
       return true;
     });
-  }, [entries, query, filterCorpus, filterStrat, filterType]);
+  }, [entries, query, filters]);
 
   const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
 
   function resetFilters() {
-    setQuery(''); setFilterCorpus('全部');
-    setFilterStrat('全部'); setFilterType('全部'); setPage(0);
+    setQuery('');
+    setFilters(DEFAULT_FILTERS);
+    setPage(0);
   }
 
-  const FilterBtn = ({ value, current, setter, children, color }) => (
+  function setFilter(key, value) {
+    setFilters(prev => ({ ...prev, [key]: value }));
+    setPage(0);
+  }
+
+  const FilterBtn = ({ value, current, onSelect, children, color }) => (
     <button
-      onClick={() => { setter(value); setPage(0); }}
+      type="button"
+      onClick={() => onSelect(value)}
       className="text-xs px-4 py-1.5 border transition-all duration-150"
       style={{
         borderColor: current === value ? (color || 'var(--gold)') : 'rgba(74,55,40,0.2)',
@@ -174,59 +83,86 @@ export default function DataExplorer({ entries }) {
     >{children}</button>
   );
 
+  const hasActiveGameFilters = initialFilters && (
+    filters.type !== '全部' || filters.strat !== '全部' || filters.transfer !== '全部'
+  );
+
   return (
     <div className="animate-fade-up flex flex-col items-center w-full">
-      <div className="flex flex-col items-center justify-center gap-3 mb-10 mt-12 w-full max-w-sm">
+      <div className="flex flex-col items-center justify-center gap-3 mb-10 mt-4 w-full max-w-sm">
         <div className="flex items-center gap-4 w-full">
-          <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gold/40"></div>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gold/40" />
           <h2 className="text-2xl font-serif text-ink tracking-widest-plus text-center" style={{ fontFamily: "'Ma Shan Zheng', serif" }}>
             原典案卷检索
           </h2>
-          <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gold/40"></div>
+          <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gold/40" />
         </div>
-        <div className="w-12 h-[2px] bg-gold/40"></div>
+        <div className="w-12 h-[2px] bg-gold/40" />
       </div>
 
-      {/* 筛选区 */}
+      {hasActiveGameFilters && (
+        <p className="text-xs text-gold tracking-widest mb-6 text-center">
+          已按你的游戏路径预填筛选条件，可继续调整或重置。
+        </p>
+      )}
+
       <div className="palace-border bg-paper-dark/20 p-8 shadow-sm mb-12 space-y-6 flex flex-col items-center w-full max-w-4xl">
         <div className="relative w-full max-w-2xl mb-2">
           <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gold" />
           <input
             value={query}
             onChange={e => { setQuery(e.target.value); setPage(0); }}
-            placeholder="搜索篇名、结局关键字或学者按语……"
+            placeholder="搜索篇名、处境、困境或学者按语……"
             className="w-full pl-12 pr-10 py-3 border border-gold/40 text-sm focus:outline-none focus:border-gold placeholder-ash/50 bg-paper transition-colors shadow-inner text-center"
           />
           {query && (
-            <button onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-ash hover:text-ink">
+            <button type="button" onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-ash hover:text-ink">
               <X size={16} />
             </button>
           )}
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 w-full">
-          <span className="text-sm font-serif text-gold tracking-widest w-12 text-center">古籍</span>
+          <span className="text-sm font-serif text-gold tracking-widest w-12 text-center shrink-0">古籍</span>
           <div className="flex flex-wrap justify-center gap-3">
-            {['全部','聊斋志异','阅微草堂笔记','子不语'].map(v => (
-              <FilterBtn key={v} value={v} current={filterCorpus} setter={setFilterCorpus} color={CORPUS_COLOR[v]}>{v}</FilterBtn>
-            ))}
-          </div>
-        </div>
-        
-        <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 w-full">
-          <span className="text-sm font-serif text-gold tracking-widest w-12 text-center">策略</span>
-          <div className="flex flex-wrap justify-center gap-3">
-            {['全部','博弈型','情感型','顺从型','抗争型','非自主'].map(v => (
-              <FilterBtn key={v} value={v} current={filterStrat} setter={setFilterStrat} color={STRAT_COLORS[v]}>{v}</FilterBtn>
+            {['全部', '聊斋志异', '阅微草堂笔记', '子不语'].map(v => (
+              <FilterBtn key={v} value={v} current={filters.corpus} onSelect={v => setFilter('corpus', v)} color={CORPUS_COLOR[v]}>{v}</FilterBtn>
             ))}
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 w-full">
-          <span className="text-sm font-serif text-gold tracking-widest w-12 text-center">本相</span>
+          <span className="text-sm font-serif text-gold tracking-widest w-12 text-center shrink-0">策略</span>
           <div className="flex flex-wrap justify-center gap-3">
-            {['全部','狐','鬼','精','仙'].map(v => (
-              <FilterBtn key={v} value={v} current={filterType} setter={setFilterType}>{v}</FilterBtn>
+            {['全部', '博弈型', '情感型', '顺从型', '抗争型', '非自主'].map(v => (
+              <FilterBtn key={v} value={v} current={filters.strat} onSelect={v => setFilter('strat', v)} color={STRAT_COLORS[v]}>{v}</FilterBtn>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 w-full">
+          <span className="text-sm font-serif text-gold tracking-widest w-12 text-center shrink-0">本相</span>
+          <div className="flex flex-wrap justify-center gap-3">
+            {['全部', '狐', '鬼', '精', '仙'].map(v => (
+              <FilterBtn key={v} value={v} current={filters.type} onSelect={v => setFilter('type', v)}>{v}</FilterBtn>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 w-full">
+          <span className="text-sm font-serif text-gold tracking-widest w-12 text-center shrink-0">印记</span>
+          <div className="flex flex-wrap justify-center gap-3">
+            {SEAL_OPTIONS.map(v => (
+              <FilterBtn key={v} value={v} current={filters.seal} onSelect={v => setFilter('seal', v)}>{v}</FilterBtn>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 w-full">
+          <span className="text-sm font-serif text-gold tracking-widest w-12 text-center shrink-0">转换</span>
+          <div className="flex flex-wrap justify-center gap-3">
+            {TRANSFER_OPTIONS.map(v => (
+              <FilterBtn key={v} value={v} current={filters.transfer} onSelect={v => setFilter('transfer', v)}>{v === '全部' ? '全部' : `转换·${v}`}</FilterBtn>
             ))}
           </div>
         </div>
@@ -235,22 +171,18 @@ export default function DataExplorer({ entries }) {
           <span className="text-xs text-ash tracking-widest">
             寻得 <strong className="text-ink text-base mx-1 font-serif">{filtered.length}</strong> 卷符合条件的记录
           </span>
-          <button onClick={resetFilters} className="text-xs text-gold hover:text-ink underline underline-offset-4 tracking-widest transition-colors">
+          <button type="button" onClick={resetFilters} className="text-xs text-gold hover:text-ink underline underline-offset-4 tracking-widest transition-colors">
             重置所有条件
           </button>
         </div>
       </div>
 
-      {/* 卷宗卡片流 (居中 Flex Wrap 布局) */}
       <div className="flex flex-wrap justify-center gap-8 w-full max-w-6xl">
-        {paginated.map(entry => {
-          const id = `${entry['语料库']}-${entry['序号']}`;
-          return (
-            <div key={id} className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-sm">
-              <EntryCard entry={entry} />
-            </div>
-          );
-        })}
+        {paginated.map(entry => (
+          <div key={`${entry['语料库']}-${entry['序号']}`} className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-sm">
+            <EntryCard entry={entry} />
+          </div>
+        ))}
       </div>
 
       {filtered.length === 0 && (
@@ -259,11 +191,11 @@ export default function DataExplorer({ entries }) {
         </div>
       )}
 
-      {/* 分页 */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-8 mt-16 w-full">
-          <button 
-            disabled={page === 0} 
+          <button
+            type="button"
+            disabled={page === 0}
             onClick={() => setPage(p => p - 1)}
             className="px-6 py-2 border border-gold/40 text-sm text-ink hover:bg-gold/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-serif tracking-widest"
           >
@@ -272,8 +204,9 @@ export default function DataExplorer({ entries }) {
           <span className="text-sm font-serif text-gold tracking-widest-plus">
             第 {page + 1} / {totalPages} 卷
           </span>
-          <button 
-            disabled={page === totalPages - 1} 
+          <button
+            type="button"
+            disabled={page === totalPages - 1}
             onClick={() => setPage(p => p + 1)}
             className="px-6 py-2 border border-gold/40 text-sm text-ink hover:bg-gold/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-serif tracking-widest"
           >

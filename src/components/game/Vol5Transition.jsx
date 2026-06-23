@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { ENCOUNTERS, TRANSITIONS } from '../../data/gameContent';
+import { ENCOUNTERS, TRANSITIONS, STRATEGY_TAGS, CHAPTER_INTROS } from '../../data/gameContent';
+import GameSceneLayout from '../layout/GameSceneLayout';
 
 export default function Vol5Transition({ encKey, failedStrat, onSelect }) {
   const encounter = ENCOUNTERS.find(e => e.key === encKey);
   const transList = TRANSITIONS[encounter.crisisKey];
   const [selected, setSelected] = useState(null);
+  const intro = CHAPTER_INTROS.vol4;
 
   function handleSelect(t) {
     setSelected(t);
@@ -12,18 +14,18 @@ export default function Vol5Transition({ encKey, failedStrat, onSelect }) {
   }
 
   return (
-    <div className="min-h-screen paper-bg flex flex-col items-center justify-center px-4 py-12">
-      <div className="max-w-2xl w-full">
+    <GameSceneLayout>
+      <div className="game-scene-card">
         <div className="text-center mb-6 animate-ink-fade">
-          <p className="text-xs tracking-widest mb-1" style={{ color: 'var(--ash)' }}>卷 五</p>
-          <h2 style={{ fontFamily: "'Ma Shan Zheng', serif", fontSize: '2rem', color: 'var(--ink)' }}>破与立</h2>
-          <div className="chapter-line mt-3 mb-3"><span className="text-xs text-red-800">策略破产·强制转换</span></div>
+          <p className="text-xs tracking-widest mb-1 text-ash">{intro.num}</p>
+          <h2 className="game-scene-title">{intro.title}</h2>
+          <div className="chapter-line mt-3 mb-3"><span className="text-xs text-ash">{intro.tagline} · 初策既破</span></div>
         </div>
 
-        <div className="mb-6 p-5 border animate-fade-up relative overflow-hidden" style={{ borderColor: 'var(--vermillion)', background: 'rgba(245,237,214,0.5)' }}>
+        <div className="mb-6 p-5 border animate-fade-up relative overflow-hidden game-scene-inset" style={{ borderColor: 'var(--vermillion)' }}>
           <div className="absolute top-0 left-0 w-1 h-full bg-red-800" />
-          <p className="text-sm leading-8" style={{ color: 'var(--ink-light)' }}>{failedStrat.failText}</p>
-          <p className="mt-3 text-xs italic" style={{ color: 'var(--vermillion)' }}>你的【{failedStrat.label}】失败了。大错已铸成，此时你该如何自处？</p>
+          <p className="text-sm leading-8 text-ink-light">{failedStrat.failText}</p>
+          <p className="mt-3 text-xs italic text-ink-light">【{failedStrat.label}】之路已尽，大错铸成，此时当如何自处？</p>
         </div>
 
         {!selected ? (
@@ -31,24 +33,27 @@ export default function Vol5Transition({ encKey, failedStrat, onSelect }) {
             {transList.map((t, i) => (
               <button
                 key={t.key}
-                className="w-full text-left p-4 border transition-all duration-300 animate-fade-up"
-                style={{ borderColor: 'rgba(74,55,40,0.3)', background: 'rgba(139,26,26,0.03)', animationDelay: `${i * 0.1}s` }}
+                type="button"
+                className="game-option-btn w-full text-left animate-fade-up"
+                style={{ animationDelay: `${i * 0.1}s`, background: 'rgba(249,246,240,0.45)' }}
                 onClick={() => handleSelect(t)}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-xs px-2 py-1" style={{ color: 'var(--vermillion)', border: '1px solid var(--vermillion)' }}>转：{t.key}</span>
+                  <span className="text-xs px-2 py-1 text-ink border border-ink/20">
+                    转·{STRATEGY_TAGS[t.key] || t.key}
+                  </span>
                   <div>
-                    <p className="text-sm font-medium" style={{ color: 'var(--ink)' }}>【{t.label}】</p>
-                    <p className="text-xs mt-1" style={{ color: 'var(--ink-light)' }}>{t.action}</p>
+                    <p className="text-sm font-medium text-ink">【{t.label}】</p>
+                    <p className="text-xs mt-1 text-ink-light">{t.action}</p>
                   </div>
                 </div>
               </button>
             ))}
           </div>
         ) : (
-          <div className="text-center mt-8 animate-ink-fade text-xs" style={{ color: 'var(--ash)' }}>因果已定……</div>
+          <div className="text-center mt-8 animate-ink-fade text-xs text-ash">因果既转，前路已定……</div>
         )}
       </div>
-    </div>
+    </GameSceneLayout>
   );
 }

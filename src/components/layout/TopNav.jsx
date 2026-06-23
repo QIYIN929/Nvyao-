@@ -1,44 +1,18 @@
-const ORNATE_SVG = (
-  <svg className="nav-ornate-svg" viewBox="0 0 120 32" preserveAspectRatio="none" aria-hidden="true">
-    <path
-      d="M6 16 L14 8 L106 8 L114 16 L106 24 L14 24 Z"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1"
-    />
-    <path d="M10 16 L16 12 L104 12 L110 16 L104 20 L16 20 Z" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.6" />
-  </svg>
-);
-
-export default function TopNav({ active = 'home', onStartSelect, onDataAnalysis, overlay = false }) {
+export default function TopNav({ onRestart, onResearch, variant = 'default' }) {
   return (
-    <header className={`site-nav${overlay ? ' site-nav--overlay' : ''}`}>
-      <div className="site-nav-inner">
-        <button
-          type="button"
-          className={`nav-link ${active === 'select' ? 'nav-link-active' : ''}`}
-          onClick={onStartSelect}
-          aria-label="开始选择"
-        >
-          {!overlay && ORNATE_SVG}
-          <span className={overlay ? 'sr-only' : undefined}>开始选择</span>
+    <header className={`site-nav site-nav--global site-nav--${variant}`}>
+      <div className="site-nav-bar">
+        <button type="button" className="site-logo" onClick={onRestart} aria-label="返回首页">
+          女妖模拟器
         </button>
-
-        <div className={`nav-diamond${overlay ? ' sr-only' : ''}`} aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="14" height="14">
-            <path d="M12 2 L22 12 L12 22 L2 12 Z" fill="none" stroke="currentColor" strokeWidth="1" />
-          </svg>
+        <div className="site-nav-actions">
+          <button type="button" className="site-nav-btn" onClick={onRestart}>
+            重新开始
+          </button>
+          <button type="button" className="site-nav-btn site-nav-btn--primary" onClick={onResearch}>
+            检索数据
+          </button>
         </div>
-
-        <button
-          type="button"
-          className={`nav-link ${active === 'research' ? 'nav-link-active' : ''}`}
-          onClick={onDataAnalysis}
-          aria-label="数据分析"
-        >
-          {!overlay && ORNATE_SVG}
-          <span className={overlay ? 'sr-only' : undefined}>数据分析</span>
-        </button>
       </div>
     </header>
   );

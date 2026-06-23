@@ -1,7 +1,6 @@
-import TopNav from '../layout/TopNav';
 import OrnateButton from '../layout/OrnateButton';
 
-export default function Prologue({ onEnter, onEnterResearch }) {
+export default function Prologue({ onEnter }) {
   return (
     <div className="hero-page hero-page--artwork">
       <div className="hero-page-bg" aria-hidden="true">
@@ -13,23 +12,15 @@ export default function Prologue({ onEnter, onEnterResearch }) {
         />
       </div>
 
-      <TopNav
-        active="home"
-        onStartSelect={onEnter}
-        onDataAnalysis={onEnterResearch}
-      />
-
-      <div className="hero-page-overlay">
+      <div className="hero-page-content">
+        <h1 className="hero-title">女妖模拟器</h1>
+        <p className="hero-subtitle">
+          你重生一世，择其形、遇其人、定其策——
+          <br />
+          每一抉择，皆可在志怪三书中寻得回响。
+        </p>
         <OrnateButton onClick={onEnter}>点击开始</OrnateButton>
       </div>
-
-      {/* 背景图下方大面积可点区域，避免热区偏移点不到 */}
-      <button
-        type="button"
-        className="hero-hit-area"
-        onClick={onEnter}
-        aria-label="点击开始"
-      />
     </div>
   );
 }

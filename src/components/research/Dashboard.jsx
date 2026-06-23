@@ -72,7 +72,7 @@ export default function Dashboard({ stats }) {
   const scoreDist = scoreDistRaw.map((cnt, i) => ({
     name: String(i),
     数量: cnt || 0,
-    fill: i <= 2 ? '#6B5B4E' : i <= 5 ? '#7C8FA0' : i <= 7 ? '#A07820' : '#8B1A1A',
+    fill: i <= 2 ? '#6B5B4E' : i <= 4 ? '#7C8FA0' : i <= 6 ? '#A07820' : '#8B1A1A',
   }));
 
   const corpusData = [
