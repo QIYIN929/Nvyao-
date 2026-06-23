@@ -41,3 +41,13 @@ export function pathKeyFromContext({ typeKey, finalStratKey, transferred }) {
   if (!typeKey || !finalStratKey) return null;
   return `${typeKey}|${finalStratKey}|${transferred ? '是' : '否'}`;
 }
+
+export function getEntryTextKey(entry) {
+  if (!entry) return '';
+  return `${entry['语料库']}|${entry['篇名']}`;
+}
+
+export function getEntryOriginalText(entry, texts) {
+  if (!entry || !texts) return null;
+  return texts[getEntryTextKey(entry)] || null;
+}

@@ -25,6 +25,7 @@ export default function ResearchPage({ gameContext }) {
   const [tab, setTab] = useState('overview');
   const [stats, setStats] = useState(null);
   const [entries, setEntries] = useState([]);
+  const [texts, setTexts] = useState({});
   const [loading, setLoading] = useState(true);
   const [explorerFilters, setExplorerFilters] = useState(() => buildExplorerFilters(gameContext));
 
@@ -32,10 +33,12 @@ export default function ResearchPage({ gameContext }) {
     Promise.all([
       fetch('/data.json').then(r => r.json()),
       fetch('/entries.json').then(r => r.json()),
+      fetch('/texts.json').then(r => r.json()).catch(() => ({})),
     ])
-      .then(([data, list]) => {
+      .then(([data, list, textMap]) => {
         setStats(data);
         setEntries(list);
+        setTexts(textMap || {});
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -138,7 +141,7 @@ export default function ResearchPage({ gameContext }) {
                 </div>
               ) : (
                 <div className="game-scene-panel w-full">
-                  <DataExplorer entries={entries} initialFilters={explorerFilters} />
+                  <DataExplorer entries={entries} texts={texts} initialFilters={explorerFilters} />
                 </div>
               )}
             </>
