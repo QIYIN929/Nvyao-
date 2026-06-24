@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './index.css';
 import { HERMIT_OUTCOME, STRATEGY_RESEARCH_KEYS } from './data/gameContent';
 import TopNav from './components/layout/TopNav';
@@ -10,6 +10,7 @@ import Vol5Transition from './components/game/Vol5Transition';
 import Vol6Cost from './components/game/Vol6Cost';
 import Vol7Result from './components/game/Vol7Result';
 import ResearchPage from './components/research/ResearchPage';
+import { parseEntryRouteHash } from './lib/researchUtils';
 
 const INITIAL_GAME_DATA = {
   typeKey: null,
@@ -23,8 +24,20 @@ const INITIAL_GAME_DATA = {
 };
 
 function App() {
-  const [phase, setPhase] = useState('prologue');
+  const [phase, setPhase] = useState(() => (
+    parseEntryRouteHash(window.location.hash) ? 'research' : 'prologue'
+  ));
   const [gameData, setGameData] = useState(INITIAL_GAME_DATA);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      if (parseEntryRouteHash(window.location.hash)) {
+        setPhase('research');
+      }
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
 
   const handleRestart = () => {
     setGameData(INITIAL_GAME_DATA);

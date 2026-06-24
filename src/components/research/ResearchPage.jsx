@@ -1,8 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Dashboard from './Dashboard';
 import DataExplorer from './DataExplorer';
 import YourPathSection from './YourPathSection';
+import EntryDetailPage from './EntryDetailPage';
 import GameSceneLayout from '../layout/GameSceneLayout';
+import {
+  entryRouteHash,
+  findEntryByRoute,
+  parseEntryRouteHash,
+} from '../../lib/researchUtils';
 
 const TABS = [
   { key: 'overview', label: '典藏概览' },
@@ -26,7 +32,9 @@ export default function ResearchPage({ gameContext }) {
   const [stats, setStats] = useState(null);
   const [entries, setEntries] = useState([]);
   const [texts, setTexts] = useState({});
+  const [wenyanTexts, setWenyanTexts] = useState({});
   const [loading, setLoading] = useState(true);
+  const [selectedEntry, setSelectedEntry] = useState(null);
   const [explorerFilters, setExplorerFilters] = useState(() => buildExplorerFilters(gameContext));
 
   useEffect(() => {
@@ -34,14 +42,53 @@ export default function ResearchPage({ gameContext }) {
       fetch('/data.json').then(r => r.json()),
       fetch('/entries.json').then(r => r.json()),
       fetch('/texts.json').then(r => r.json()).catch(() => ({})),
+      fetch('/texts_wenyan.json').then(r => r.json()).catch(() => ({})),
     ])
-      .then(([data, list, textMap]) => {
+      .then(([data, list, textMap, wenyanMap]) => {
         setStats(data);
         setEntries(list);
         setTexts(textMap || {});
+        setWenyanTexts(wenyanMap || {});
         setLoading(false);
       })
       .catch(() => setLoading(false));
+  }, []);
+
+  const syncEntryFromHash = useCallback(() => {
+    const route = parseEntryRouteHash(window.location.hash);
+    if (!route || !entries.length) {
+      setSelectedEntry(null);
+      return;
+    }
+    const entry = findEntryByRoute(entries, route.corpus, route.seq);
+    setSelectedEntry(entry);
+    if (entry) setTab('explore');
+  }, [entries]);
+
+  useEffect(() => {
+    if (loading) return;
+    syncEntryFromHash();
+    window.addEventListener('hashchange', syncEntryFromHash);
+    return () => window.removeEventListener('hashchange', syncEntryFromHash);
+  }, [loading, syncEntryFromHash]);
+
+  const openEntry = useCallback((entry) => {
+    if (!entry) return;
+    setSelectedEntry(entry);
+    setTab('explore');
+    const hash = entryRouteHash(entry);
+    if (window.location.hash !== hash) {
+      window.location.hash = hash;
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
+  const closeEntry = useCallback(() => {
+    setSelectedEntry(null);
+    if (window.location.hash.startsWith('#/entry/')) {
+      window.history.pushState(null, '', window.location.pathname + window.location.search);
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
   const totalEntries = stats?.globalStats?.total || 0;
@@ -51,6 +98,17 @@ export default function ResearchPage({ gameContext }) {
     setExplorerFilters(buildExplorerFilters(gameContext));
     setTab('explore');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  if (!loading && selectedEntry) {
+    return (
+      <EntryDetailPage
+        entry={selectedEntry}
+        texts={texts}
+        wenyanTexts={wenyanTexts}
+        onBack={closeEntry}
+      />
+    );
   }
 
   return (
@@ -127,6 +185,7 @@ export default function ResearchPage({ gameContext }) {
                     stats={stats}
                     entries={entries}
                     onExploreSimilar={handleExploreSimilar}
+                    onOpenEntry={openEntry}
                   />
                 </div>
               )}
@@ -141,7 +200,11 @@ export default function ResearchPage({ gameContext }) {
                 </div>
               ) : (
                 <div className="game-scene-panel w-full">
-                  <DataExplorer entries={entries} texts={texts} initialFilters={explorerFilters} />
+                  <DataExplorer
+                    entries={entries}
+                    initialFilters={explorerFilters}
+                    onOpenEntry={openEntry}
+                  />
                 </div>
               )}
             </>

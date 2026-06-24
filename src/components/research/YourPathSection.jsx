@@ -4,7 +4,7 @@ import {
 } from '../../lib/researchUtils';
 import EntryCard from './EntryCard';
 
-export default function YourPathSection({ gameContext, stats, entries, onExploreSimilar }) {
+export default function YourPathSection({ gameContext, stats, entries, onExploreSimilar, onOpenEntry }) {
   if (!gameContext?.typeKey) return null;
 
   const type = TYPES[gameContext.typeKey];
@@ -102,7 +102,7 @@ export default function YourPathSection({ gameContext, stats, entries, onExplore
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {preview.map((entry) => (
-                <EntryCard key={`${entry['语料库']}-${entry['序号']}`} entry={entry} compact />
+                <EntryCard key={`${entry['语料库']}-${entry['序号']}`} entry={entry} compact onOpen={onOpenEntry} />
               ))}
             </div>
           </div>

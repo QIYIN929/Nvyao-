@@ -51,3 +51,25 @@ export function getEntryOriginalText(entry, texts) {
   if (!entry || !texts) return null;
   return texts[getEntryTextKey(entry)] || null;
 }
+
+export function getEntryWenyanText(entry, wenyanTexts) {
+  if (!entry || !wenyanTexts) return null;
+  return wenyanTexts[getEntryTextKey(entry)] || null;
+}
+
+export function entryRouteHash(entry) {
+  if (!entry) return '';
+  return `#/entry/${encodeURIComponent(entry['语料库'])}/${entry['序号']}`;
+}
+
+export function parseEntryRouteHash(hash) {
+  const m = String(hash || '').match(/^#\/entry\/([^/]+)\/(\d+)$/);
+  if (!m) return null;
+  return { corpus: decodeURIComponent(m[1]), seq: Number(m[2]) };
+}
+
+export function findEntryByRoute(entries, corpus, seq) {
+  return (entries || []).find(
+    (e) => e['语料库'] === corpus && Number(e['序号']) === seq,
+  ) || null;
+}

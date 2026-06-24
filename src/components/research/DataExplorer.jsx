@@ -25,7 +25,7 @@ const DEFAULT_FILTERS = {
   transfer: '全部',
 };
 
-export default function DataExplorer({ entries, texts = {}, initialFilters }) {
+export default function DataExplorer({ entries, initialFilters, onOpenEntry }) {
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState(initialFilters || DEFAULT_FILTERS);
   const [page, setPage] = useState(0);
@@ -180,7 +180,7 @@ export default function DataExplorer({ entries, texts = {}, initialFilters }) {
       <div className="flex flex-wrap justify-center gap-8 w-full max-w-6xl">
         {paginated.map(entry => (
           <div key={`${entry['语料库']}-${entry['序号']}`} className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-sm">
-            <EntryCard entry={entry} texts={texts} />
+            <EntryCard entry={entry} onOpen={onOpenEntry} />
           </div>
         ))}
       </div>
