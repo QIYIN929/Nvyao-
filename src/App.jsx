@@ -98,7 +98,7 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
-  const navVariant = phase === 'prologue' ? 'hero' : phase === 'research' ? 'paper' : 'paper';
+  const navVariant = (phase === 'prologue' || phase === 'vol1') ? 'hero' : 'paper';
 
   return (
     <div className="app-shell">

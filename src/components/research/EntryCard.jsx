@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
 import { getSealTier } from '../../data/gameContent';
 import { formatEntryTitle, getEntryOriginalText, getSealShort } from '../../lib/researchUtils';
@@ -14,26 +14,82 @@ const STRAT_COLORS = {
   抗争型: '#2C4A3E', 非自主: '#7C8FA0',
 };
 
-function TextStage({ label, labelColor, children, emptyText }) {
+const PANELS = [
+  { key: 'original', label: '原文' },
+  { key: 'commentary', label: '考语' },
+  { key: 'data', label: '数据表格' },
+];
+
+const DATA_ROWS = [
+  ['语料库', '语料库'],
+  ['序号', '序号'],
+  ['篇名', '篇名'],
+  ['异类类型', '异类类型'],
+  ['策略类型', '策略类型_主'],
+  ['策略转换', '策略转换'],
+  ['主体性评分', '主体性评分'],
+  ['初始处境', '初始处境'],
+  ['核心困境', '核心困境'],
+  ['主要手段', '主要手段'],
+  ['最终结局', '最终结局_大类'],
+  ['重大代价', '是否付出重大代价'],
+  ['代价类型', '代价类型'],
+  ['策略自反性', '策略自反性'],
+  ['跨越人妖界限', '是否跨越人妖界限'],
+  ['理论标签', '理论标签'],
+  ['备注', '备注'],
+];
+
+function VerticalReader({ text, emptyText }) {
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollLeft = el.scrollWidth - el.clientWidth;
+  }, [text]);
+
+  if (!text) {
+    return (
+      <div className="entry-reader entry-reader--empty">
+        <p>{emptyText}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="entry-text-stage">
-      <span className="entry-text-stage__label" style={{ color: `${labelColor}99`, borderColor: `${labelColor}33` }}>
-        {label}
-      </span>
-      <div className="entry-text-stage__scroll custom-scrollbar">
-        <div className="entry-text-stage__body vertical-text">
-          {children || <p className="text-[#8C7B6D] tracking-widest">{emptyText}</p>}
+    <div className="entry-reader">
+      <div className="entry-reader__scroll custom-scrollbar" ref={scrollRef}>
+        <div className="entry-reader__columns vertical-text">
+          {text.split(/(?<=。)/).map((sentence, idx) => (
+            sentence.trim() ? <p key={idx}>{sentence.trim()}</p> : null
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-function MetaChip({ label, value, color }) {
+function EntryDataTable({ entry, score, sealShort, sealColor, stratKey }) {
   return (
-    <div className="entry-meta-chip">
-      <span className="entry-meta-chip__label">{label}</span>
-      <span className="entry-meta-chip__value" style={color ? { color } : undefined}>{value}</span>
+    <div className="entry-data-panel custom-scrollbar">
+      <table className="entry-data-table">
+        <tbody>
+          {DATA_ROWS.map(([label, field]) => {
+            let value = entry[field];
+            if (field === '主体性评分') value = `${score} / 9（${sealShort}）`;
+            if (value === undefined || value === null || value === '') value = '—';
+            const color = field === '策略类型_主' ? STRAT_COLORS[stratKey]
+              : field === '主体性评分' ? sealColor : undefined;
+            return (
+              <tr key={field}>
+                <th>{label}</th>
+                <td style={color ? { color } : undefined}>{String(value)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -46,19 +102,18 @@ export default function EntryCard({ entry, texts = {}, compact = false }) {
   const sealShort = getSealShort(seal);
   const title = formatEntryTitle(entry['篇名']);
   const hasTrans = entry['策略转换'] === '是';
-  const details = entry['备注'] || '暂无详细记载。';
+  const commentary = entry['备注'] || '';
   const situation = entry['初始处境'] || '';
   const dilemma = entry['核心困境'] || '';
   const originalText = getEntryOriginalText(entry, texts);
   const [panel, setPanel] = useState('original');
 
-  const activePanel = originalText ? panel : 'commentary';
-  const bodyText = activePanel === 'original' ? originalText : details;
-  const bodyLabel = activePanel === 'original' ? '原文' : '学者按语';
-  const bodyColor = activePanel === 'original' ? corpusColor : '#8C0F16';
+  function handleOpenChange(open) {
+    if (open) setPanel(originalText ? 'original' : 'data');
+  }
 
   return (
-    <Dialog onOpenChange={(open) => { if (open) setPanel('original'); }}>
+    <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <div className={`group relative bg-paper/40 border border-ink/10 p-5 hover:border-ink/30 transition-all shadow-sm hover:shadow-md flex flex-col h-full overflow-hidden cursor-pointer text-left w-full hover:-translate-y-1 ${compact ? 'p-4' : ''}`}>
           <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: corpusColor }} />
@@ -123,65 +178,46 @@ export default function EntryCard({ entry, texts = {}, compact = false }) {
             <DialogDescription className="entry-detail-dialog__id">编号 {entry['序号']}</DialogDescription>
           </div>
 
-          {originalText && (
-            <div className="entry-detail-dialog__tabs">
-              {[
-                ['original', '原文'],
-                ['commentary', '学者按语'],
-              ].map(([key, label]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setPanel(key)}
-                  className="entry-detail-dialog__tab"
-                  data-active={activePanel === key}
-                  style={{
-                    borderColor: activePanel === key ? corpusColor : 'rgba(74,55,40,0.15)',
-                    color: activePanel === key ? corpusColor : '#8C7B6D',
-                    background: activePanel === key ? `${corpusColor}10` : 'transparent',
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
+          <nav className="entry-detail-dialog__tabs" aria-label="卷宗阅览">
+            {PANELS.map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setPanel(key)}
+                className="entry-detail-dialog__tab"
+                aria-current={panel === key ? 'page' : undefined}
+                style={{
+                  borderColor: panel === key ? corpusColor : 'rgba(74,55,40,0.18)',
+                  color: panel === key ? corpusColor : '#8C7B6D',
+                  background: panel === key ? `${corpusColor}12` : 'transparent',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
         </header>
 
         <main className="entry-detail-dialog__main">
-          <TextStage
-            label={bodyLabel}
-            labelColor={bodyColor}
-            emptyText={activePanel === 'original' ? '本篇原文暂未编入馆藏。' : '暂无详细记载。'}
-          >
-            {bodyText && bodyText.split(/(?<=。)/).map((sentence, idx) => (
-              sentence.trim() ? (
-                <p key={idx} className="entry-text-stage__sentence">
-                  {sentence.trim()}{activePanel === 'commentary' && !sentence.trim().endsWith('。') ? '。' : ''}
-                </p>
-              ) : null
-            ))}
-          </TextStage>
+          {panel === 'original' && (
+            <VerticalReader text={originalText} emptyText="本篇原文暂未编入馆藏。" />
+          )}
+          {panel === 'commentary' && (
+            <VerticalReader
+              text={commentary ? `${commentary}${commentary.endsWith('。') ? '' : '。'}` : ''}
+              emptyText="暂无考语。"
+            />
+          )}
+          {panel === 'data' && (
+            <EntryDataTable
+              entry={entry}
+              score={score}
+              sealShort={sealShort}
+              sealColor={seal.color}
+              stratKey={stratKey}
+            />
+          )}
         </main>
-
-        <footer className="entry-detail-dialog__footer">
-          <MetaChip label="异类本相" value={entry['异类类型'] || '未知'} />
-          <MetaChip label="初始策略" value={stratKey} color={STRAT_COLORS[stratKey]} />
-          <MetaChip label="策略转换" value={hasTrans ? '是' : '否'} />
-          <MetaChip label="结局" value={entry['最终结局_大类'] || '未知'} />
-          <MetaChip label="主体性" value={`${score} · ${sealShort}`} color={seal.color} />
-        </footer>
-
-        {(situation || dilemma) && (
-          <div className="entry-detail-dialog__context">
-            {situation && (
-              <p><span>初始处境</span>{situation}</p>
-            )}
-            {dilemma && (
-              <p><span>核心困境</span>{dilemma}</p>
-            )}
-          </div>
-        )}
       </DialogContent>
     </Dialog>
   );
