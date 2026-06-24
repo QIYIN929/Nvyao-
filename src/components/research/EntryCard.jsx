@@ -14,17 +14,26 @@ const STRAT_COLORS = {
   抗争型: '#2C4A3E', 非自主: '#7C8FA0',
 };
 
-function VerticalPanel({ label, labelColor, children, emptyText }) {
+function TextStage({ label, labelColor, children, emptyText }) {
   return (
-    <div className="flex-1 relative flex justify-end min-w-0">
-      <div className="absolute top-0 bottom-0 right-0 w-8 border-l flex items-center justify-center" style={{ borderColor: `${labelColor}33` }}>
-        <span className="vertical-text text-sm" style={{ color: `${labelColor}66` }}>{label}</span>
+    <div className="entry-text-stage">
+      <span className="entry-text-stage__label" style={{ color: `${labelColor}99`, borderColor: `${labelColor}33` }}>
+        {label}
+      </span>
+      <div className="entry-text-stage__scroll custom-scrollbar">
+        <div className="entry-text-stage__body vertical-text">
+          {children || <p className="text-[#8C7B6D] tracking-widest">{emptyText}</p>}
+        </div>
       </div>
-      <div className="pr-12 h-[420px] overflow-x-auto overflow-y-hidden vertical-text text-left text-[#5C4D43] leading-loose tracking-[0.3em] text-[15px] p-4 custom-scrollbar w-full">
-        {children || (
-          <p className="text-[#8C7B6D] tracking-widest">{emptyText}</p>
-        )}
-      </div>
+    </div>
+  );
+}
+
+function MetaChip({ label, value, color }) {
+  return (
+    <div className="entry-meta-chip">
+      <span className="entry-meta-chip__label">{label}</span>
+      <span className="entry-meta-chip__value" style={color ? { color } : undefined}>{value}</span>
     </div>
   );
 }
@@ -44,9 +53,12 @@ export default function EntryCard({ entry, texts = {}, compact = false }) {
   const [panel, setPanel] = useState('original');
 
   const activePanel = originalText ? panel : 'commentary';
+  const bodyText = activePanel === 'original' ? originalText : details;
+  const bodyLabel = activePanel === 'original' ? '原文' : '学者按语';
+  const bodyColor = activePanel === 'original' ? corpusColor : '#8C0F16';
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={(open) => { if (open) setPanel('original'); }}>
       <DialogTrigger asChild>
         <div className={`group relative bg-paper/40 border border-ink/10 p-5 hover:border-ink/30 transition-all shadow-sm hover:shadow-md flex flex-col h-full overflow-hidden cursor-pointer text-left w-full hover:-translate-y-1 ${compact ? 'p-4' : ''}`}>
           <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: corpusColor }} />
@@ -101,52 +113,18 @@ export default function EntryCard({ entry, texts = {}, compact = false }) {
         </div>
       </DialogTrigger>
 
-      <DialogContent className="max-w-4xl min-h-[520px] flex flex-col sm:flex-row gap-8 overflow-hidden bg-[#F9F6F0]">
-        <div className="flex-1 flex flex-col border-r border-[#C29C57]/30 pr-6 min-w-[240px]">
-          <div className="mb-6">
-            <span className="text-xs px-2 py-1 border" style={{ borderColor: `${corpusColor}40`, color: corpusColor, background: `${corpusColor}10` }}>
+      <DialogContent className="entry-detail-dialog">
+        <header className="entry-detail-dialog__header">
+          <div className="entry-detail-dialog__title-block">
+            <span className="entry-detail-dialog__corpus" style={{ borderColor: `${corpusColor}40`, color: corpusColor, background: `${corpusColor}10` }}>
               {entry['语料库']}
             </span>
+            <DialogTitle className="entry-detail-dialog__title">《{title}》</DialogTitle>
+            <DialogDescription className="entry-detail-dialog__id">编号 {entry['序号']}</DialogDescription>
           </div>
-          <DialogTitle>《{title}》</DialogTitle>
-          <div className="mt-6 space-y-4">
-            {[
-              ['异类本相', entry['异类类型'] || '未知'],
-              ['初始策略', stratKey],
-              ['策略转换', hasTrans ? '是' : '否'],
-              ['结局大类', entry['最终结局_大类'] || '未知'],
-              ['主体性评分', `${score}（${sealShort}）`],
-            ].map(([label, value]) => (
-              <div key={label} className="flex justify-between border-b border-[#221814]/10 pb-2 gap-4">
-                <span className="text-sm text-[#8C7B6D] tracking-widest shrink-0">{label}</span>
-                <span className="text-sm text-[#221814] text-right" style={label === '初始策略' ? { color: STRAT_COLORS[stratKey] } : label === '主体性评分' ? { color: seal.color, fontWeight: 600 } : undefined}>{value}</span>
-              </div>
-            ))}
-          </div>
-          {(situation || dilemma) && (
-            <div className="mt-6 space-y-3 text-sm">
-              {situation && (
-                <div>
-                  <p className="text-xs text-[#8C7B6D] tracking-widest mb-1">初始处境</p>
-                  <p className="text-[#5C4D43] leading-relaxed">{situation}</p>
-                </div>
-              )}
-              {dilemma && (
-                <div>
-                  <p className="text-xs text-[#8C7B6D] tracking-widest mb-1">核心困境</p>
-                  <p className="text-[#5C4D43] leading-relaxed">{dilemma}</p>
-                </div>
-              )}
-            </div>
-          )}
-          <DialogDescription className="mt-auto pt-6 text-xs text-[#8C7B6D]">
-            编号：{entry['序号']}
-          </DialogDescription>
-        </div>
 
-        <div className="flex-[1.4] flex flex-col min-w-0">
           {originalText && (
-            <div className="flex gap-2 mb-4 shrink-0">
+            <div className="entry-detail-dialog__tabs">
               {[
                 ['original', '原文'],
                 ['commentary', '学者按语'],
@@ -155,7 +133,8 @@ export default function EntryCard({ entry, texts = {}, compact = false }) {
                   key={key}
                   type="button"
                   onClick={() => setPanel(key)}
-                  className="text-xs px-3 py-1 border transition-colors tracking-widest"
+                  className="entry-detail-dialog__tab"
+                  data-active={activePanel === key}
                   style={{
                     borderColor: activePanel === key ? corpusColor : 'rgba(74,55,40,0.15)',
                     color: activePanel === key ? corpusColor : '#8C7B6D',
@@ -167,21 +146,42 @@ export default function EntryCard({ entry, texts = {}, compact = false }) {
               ))}
             </div>
           )}
+        </header>
 
-          {activePanel === 'original' ? (
-            <VerticalPanel label="原文" labelColor={corpusColor}>
-              {originalText.split(/(?<=。)/).map((sentence, idx) => (
-                sentence.trim() ? <p key={idx} className="mb-2">{sentence.trim()}</p> : null
-              ))}
-            </VerticalPanel>
-          ) : (
-            <VerticalPanel label="学者按语" labelColor="#8C0F16">
-              {details.split('。').map((sentence, idx) => (
-                sentence.trim() ? <p key={idx} className="mb-2">{sentence.trim()}。</p> : null
-              ))}
-            </VerticalPanel>
-          )}
-        </div>
+        <main className="entry-detail-dialog__main">
+          <TextStage
+            label={bodyLabel}
+            labelColor={bodyColor}
+            emptyText={activePanel === 'original' ? '本篇原文暂未编入馆藏。' : '暂无详细记载。'}
+          >
+            {bodyText && bodyText.split(/(?<=。)/).map((sentence, idx) => (
+              sentence.trim() ? (
+                <p key={idx} className="entry-text-stage__sentence">
+                  {sentence.trim()}{activePanel === 'commentary' && !sentence.trim().endsWith('。') ? '。' : ''}
+                </p>
+              ) : null
+            ))}
+          </TextStage>
+        </main>
+
+        <footer className="entry-detail-dialog__footer">
+          <MetaChip label="异类本相" value={entry['异类类型'] || '未知'} />
+          <MetaChip label="初始策略" value={stratKey} color={STRAT_COLORS[stratKey]} />
+          <MetaChip label="策略转换" value={hasTrans ? '是' : '否'} />
+          <MetaChip label="结局" value={entry['最终结局_大类'] || '未知'} />
+          <MetaChip label="主体性" value={`${score} · ${sealShort}`} color={seal.color} />
+        </footer>
+
+        {(situation || dilemma) && (
+          <div className="entry-detail-dialog__context">
+            {situation && (
+              <p><span>初始处境</span>{situation}</p>
+            )}
+            {dilemma && (
+              <p><span>核心困境</span>{dilemma}</p>
+            )}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
